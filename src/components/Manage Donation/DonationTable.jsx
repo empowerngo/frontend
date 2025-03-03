@@ -28,7 +28,7 @@ const DonationTable = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [donations, setdonations] = useState([]);
   const [currentPage, setCurrentPage] = useState(1); // State for current page
-  const rowsPerPage = 5; // Number of rows to display per page
+  const rowsPerPage = 10; // Number of rows to display per page
   const userData = localStorage.getItem("user");
 
   const [donors, setDonors] = useState([]);
@@ -442,6 +442,9 @@ const DonationTable = ({
             <TableRow className="bg-gray-100">
               <TableCell className="font-semibold text-gray-700">SI</TableCell>
               <TableCell className="font-semibold text-gray-700">
+                Receipt No.
+              </TableCell>
+              <TableCell className="font-semibold text-gray-700">
                 Date
               </TableCell>
 
@@ -450,6 +453,9 @@ const DonationTable = ({
               </TableCell>
               <TableCell className="font-semibold text-gray-700">
                 Mobile
+              </TableCell>
+              <TableCell className="font-semibold text-gray-700">
+                PAN
               </TableCell>
               <TableCell className="font-semibold text-gray-700">
                 Amount
@@ -468,11 +474,13 @@ const DonationTable = ({
             {currentRows.map((donation, index) => (
               <TableRow key={index} className="hover:bg-gray-50 transition">
                 <TableCell>{index + 1}</TableCell>
+                <TableCell>{donation.receiptNumber}</TableCell>
                 <TableCell>{formatDate(donation.donationDate)}</TableCell>
                 <TableCell>
                   {donation.donorFName} {donation.donorLName}
                 </TableCell>
                 <TableCell>{donation.donorMobile}</TableCell>
+                <TableCell>{donation.donorPAN}</TableCell>
                 <TableCell>{donation.amount}</TableCell>
                 <TableCell>
                   <IconButton
