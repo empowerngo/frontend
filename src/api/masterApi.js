@@ -1,9 +1,11 @@
+import axios from "axios";
 import api from "./api";
 
 export const loginUser = async (credentials) => {
   try {
     const response = await api.post("/userSignIn", credentials);
     const { token, user } = response.data.payload;
+    console.log(response.data.payload);
     localStorage.setItem("authToken", token);
     localStorage.setItem("user", JSON.stringify(user));
     return response.data;
@@ -43,8 +45,8 @@ export const retrieveNGOList = async (reqType, ngoId = null) => {
     console.log("Token Sent:", token);
     const response = await api.post("/retrieveNGOInfo", requestData, {
       headers: {
-        Authorization: `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     });
 
     return response.data;
@@ -94,7 +96,7 @@ export const getPurposes = async (ngoID, projectID) => {
     const response = await api.post("/managePurpose", {
       reqType: "g",
       ngoID,
-      projectID
+      projectID,
     });
     return response.data.payload || [];
   } catch (error) {
@@ -213,7 +215,9 @@ export const handleDonorRequest = async (formData, reqType) => {
 export const getDonorData = async (formData, reqType) => {
   try {
     if (!["info", "list"].includes(reqType)) {
-      throw new Error("invalid reqType. Must be 'info' for get info or 'list' for list data");
+      throw new Error(
+        "invalid reqType. Must be 'info' for get info or 'list' for list data"
+      );
     }
 
     if (reqType === "info" && !formData.donorID) {
@@ -223,11 +227,11 @@ export const getDonorData = async (formData, reqType) => {
     if (reqType === "list" && !formData.ngoID) {
       throw new Error("NGO ID is required for getting donor info");
     }
-    
+
     const payload = { ...formData, reqType };
     const response = await api.post("/retrieveDonorInfo", payload);
-    
-    return response.data; 
+
+    return response.data;
   } catch (error) {
     console.error("Error handling donor request:", error);
     throw error.response?.data || error.message;
@@ -271,5 +275,95 @@ export const importFile = async (csvData, ngoId, donationType) => {
   } catch (error) {
     console.error("Upload failed:", error);
     alert("Upload failed.");
+  }
+};
+
+export const getStatement = async () => {
+  try {
+    const NGO_ID = localStorage.getItem("user");
+    const parsedData = JSON.parse(NGO_ID);
+
+    const requestData = { ngoID: parsedData.NGO_ID.toString() };
+    const response = await api.post("/retrieveStatementData", requestData);
+
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+export const retrieveDonations = async () => {
+  try {
+    const NGO_ID = localStorage.getItem("user");
+    const parsedData = JSON.parse(NGO_ID);
+
+    const requestData = { ngoID: parsedData.NGO_ID.toString() };
+    const response = await api.post("/retrieveDonations", requestData);
+
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+export const handleDonationRequest = async (formData, reqType) => {
+  try {
+    console.log(formData, reqType);
+    if (!["s", "u"].includes(reqType)) {
+      throw new Error(
+        "Invalid reqType. Must be 's' for save or 'u' for update."
+      );
+    }
+    if (reqType === "u") {
+      if (!formData.ngoID) {
+        throw new Error("NGO ID is required for updating donor details.");
+      }
+    }
+    const payload = { ...formData, reqType };
+    const response = await api.post("/manageDonations", payload);
+    return response.data;
+  } catch (error) {
+    console.error("Error handling donor request:", error);
+    throw error.response?.data || error.message;
+  }
+};
+
+// export const sendEmail = async (donorDetails, receiptAttachment) => {
+//   try {
+//     const requestData = {
+//       donorDetails,
+//       receiptAttachment,
+//     };
+
+//     const response = await api.post("/sendEmail", requestData);
+
+//     console.log(requestData);
+//     return response.data;
+//   } catch (error) {
+//     throw error.response?.data || error.message;
+//   }
+// };
+
+export const sendEmail = async (donorDetails, receiptAttachment) => {
+  try {
+    const formData = new FormData();
+    formData.append("donorDetails", JSON.stringify(donorDetails));
+    formData.append("receiptAttachment", receiptAttachment);
+
+    const token = localStorage.getItem("authToken");
+
+    const headers = {
+      "Content-Type": "multipart/form-data",
+      Authorization: `Bearer ${token}`,
+    };
+
+    const response = await axios.post(
+      "https://kayrseuphg.execute-api.ap-south-1.amazonaws.com/Stage/sendEmail",
+      formData
+    );
+
+    console.log("FormData sent:", formData);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
   }
 };

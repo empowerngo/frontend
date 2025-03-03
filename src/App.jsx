@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import { useState, useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -77,12 +82,14 @@ function App() {
             <Route
               path="addstaff"
               element={
-                <ProtectedRoute allowedRoles={[ROLES.SUPER_ADMIN, ROLES.NGO_ADMIN]}>
+                <ProtectedRoute
+                  allowedRoles={[ROLES.SUPER_ADMIN, ROLES.NGO_ADMIN]}
+                >
                   <Managestaff />
                 </ProtectedRoute>
               }
             />
-             <Route
+            <Route
               path="managePlan"
               element={
                 <ProtectedRoute allowedRoles={[ROLES.SUPER_ADMIN]}>
@@ -93,7 +100,13 @@ function App() {
             <Route
               path="manageDonation"
               element={
-                <ProtectedRoute allowedRoles={[ROLES.NGO_STAFF, ROLES.NGO_CA, ROLES.NGO_ADMIN]}>
+                <ProtectedRoute
+                  allowedRoles={[
+                    ROLES.NGO_STAFF,
+                    ROLES.NGO_CA,
+                    ROLES.NGO_ADMIN,
+                  ]}
+                >
                   <ManageDonation />
                 </ProtectedRoute>
               }
@@ -125,7 +138,9 @@ function App() {
             <Route
               path="/manageUser"
               element={
-                <ProtectedRoute allowedRoles={[ROLES.NGO_ADMIN, ROLES.SUPER_ADMIN]}>
+                <ProtectedRoute
+                  allowedRoles={[ROLES.NGO_ADMIN, ROLES.SUPER_ADMIN]}
+                >
                   <Managestaff />
                 </ProtectedRoute>
               }
@@ -135,7 +150,10 @@ function App() {
           <Route
             path="*"
             element={
-              <Navigate to={isAuthenticated ? "/dashboard" : "/signin"} replace />
+              <Navigate
+                to={isAuthenticated ? "/dashboard" : "/signin"}
+                replace
+              />
             }
           />
         </Routes>
