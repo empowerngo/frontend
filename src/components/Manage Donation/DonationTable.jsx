@@ -182,30 +182,39 @@ const DonationTable = ({
 
     html2pdf().set(options).from(element).save();
   };
-  const GeneratePdf = (element) => {
-    // Define PDF generation options
+  const GeneratePdf = (element, donation) => {
     const options = {
-      margin: [0, 0, 0, 0], // Top, Right, Bottom, Left margins
-      filename: "resume.pdf", // Output file name
-      image: { type: "jpeg", quality: 0.98 }, // Image quality
-      html2canvas: { scale: 2, useCORS: true, letterRendering: true }, // Canvas rendering options
-      jsPDF: {
-        unit: "pt",
-        format: "a4",
-        orientation: "portrait",
-      },
+      margin: [0, 0, 0, 0],
+      filename: `${donation.donorFName}_${donation.donorLName}_${formatDate(
+        donation.donationDate
+      )}.pdf`,
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+      jsPDF: { unit: "pt", format: "a4", orientation: "portrait" },
       pagebreak: { mode: ["avoid-all", "css", "legacy"] },
     };
 
-    // html2pdf().set(options).from(element).save();
+    const base64Prefix = "data:application/pdf;base64,";
 
-    // Generate the PDF and return it as a base64 string
     return new Promise((resolve, reject) => {
       html2pdf()
         .set(options)
         .from(element)
-        .outputPdf("datauristring") // Generate base64-encoded PDF
-        .then((base64Pdf) => resolve(base64Pdf))
+        .outputPdf("datauristring")
+        .then((dataUri) => {
+          console.log("Generated data URI:", dataUri); // Debugging line
+          let base64Content;
+
+          if (dataUri.startsWith(base64Prefix)) {
+            base64Content = dataUri.slice(base64Prefix.length);
+          } else if (dataUri.includes(",")) {
+            base64Content = dataUri.split(",")[1];
+          } else {
+            reject(new Error("Invalid data URI format"));
+          }
+
+          resolve(base64Content); // Return only the raw base64 content
+        })
         .catch((error) => reject(error));
     });
   };
@@ -390,7 +399,15 @@ const DonationTable = ({
       const receiptElement =
         hiddenContainer.querySelector(".receipt-container");
 
-      const base64Pdf = await GeneratePdf(receiptElement);
+      const base64Pdf = await GeneratePdf(receiptElement, i);
+
+      const receiptAttachment = {
+        filename: ` ${i.donorFName}_${i.donorLName}_${formatDate(
+          i.donationDate
+        )}.pdf`,
+        contentType: "application/pdf",
+        content: base64Pdf,
+      };
 
       const donorDetails = {
         donorFName: i.donorFName,
@@ -401,7 +418,9 @@ const DonationTable = ({
         ngoContactNo: parsedData.CONTACT_NUMBER,
       };
 
-      const response = await sendEmail(donorDetails, base64Pdf);
+      console.log(donorDetails, receiptAttachment);
+
+      const response = await sendEmail(donorDetails, receiptAttachment);
 
       console.log("Email sent successfully:", response);
       alert("Email sent successfully!");

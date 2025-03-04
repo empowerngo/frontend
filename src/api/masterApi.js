@@ -327,41 +327,16 @@ export const handleDonationRequest = async (formData, reqType) => {
   }
 };
 
-// export const sendEmail = async (donorDetails, receiptAttachment) => {
-//   try {
-//     const requestData = {
-//       donorDetails,
-//       receiptAttachment,
-//     };
-
-//     const response = await api.post("/sendEmail", requestData);
-
-//     console.log(requestData);
-//     return response.data;
-//   } catch (error) {
-//     throw error.response?.data || error.message;
-//   }
-// };
-
 export const sendEmail = async (donorDetails, receiptAttachment) => {
   try {
-    const formData = new FormData();
-    formData.append("donorDetails", JSON.stringify(donorDetails));
-    formData.append("receiptAttachment", receiptAttachment);
-
-    const token = localStorage.getItem("authToken");
-
-    const headers = {
-      "Content-Type": "multipart/form-data",
-      Authorization: `Bearer ${token}`,
+    const requestData = {
+      donorDetails,
+      receiptAttachment,
     };
 
-    const response = await axios.post(
-      "https://kayrseuphg.execute-api.ap-south-1.amazonaws.com/Stage/sendEmail",
-      formData
-    );
+    const response = await api.post("/sendEmail", requestData);
 
-    console.log("FormData sent:", formData);
+    console.log(requestData);
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
