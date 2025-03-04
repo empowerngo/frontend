@@ -10,10 +10,13 @@ import {
   Paper,
   TextField,
   Button,
-  CircularProgress
+  CircularProgress,
+  IconButton
 } from "@mui/material";
 import EditUserForm from "./EditUserForm"; 
 import { retrieveUserList } from "../../api/masterApi";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import EditIcon from "@mui/icons-material/Edit";
 
 const StaffTable = () => {
   const [userList, setUserList] = useState([]);
@@ -39,12 +42,29 @@ const StaffTable = () => {
     fetchUserList();
   }, []);
 
+
   const filteredStaff = useMemo(() => {
-    return Array.isArray(userList) && searchTerm
-      ? userList.filter((staff) =>
-          (staff.NAME || "").toLowerCase().includes(searchTerm.toLowerCase())
-        )
-      : userList;
+    if (!Array.isArray(userList)) {
+      return userList; // Or return [], or handle the error appropriately
+    }
+  
+    if (!searchTerm) {
+      return userList;
+    }
+  
+    const lowerSearchTerm = searchTerm.toLowerCase();
+  
+    return userList.filter((staff) => {
+      const name = (staff.NAME || "").toLowerCase();
+      const email = (staff.EMAIL || "").toLowerCase();
+      const contact = (staff.CONTACT_NUMBER || "").toLowerCase();
+  
+      return (
+        name.includes(lowerSearchTerm) ||
+        email.includes(lowerSearchTerm) ||
+        contact.includes(lowerSearchTerm)
+      );
+    });
   }, [userList, searchTerm]);
 
   const handleEdit = (staff) => {
@@ -125,14 +145,20 @@ const StaffTable = () => {
                     <TableCell>{staff.CREATED_BY_NAME}</TableCell>
                     <TableCell>{staff.USER_STATUS}</TableCell>
                     <TableCell>
-                      <Button
+                      {/* <Button
                         variant="contained"
                         color="primary"
                         size="small"
                         onClick={() => handleEdit(staff)}
                       >
                         Edit
-                      </Button>
+                      </Button> */}
+                      <IconButton
+                          color="secondary"
+                          onClick={() => handleEdit(staff)}
+                        >
+                          <EditIcon />
+                        </IconButton>
                     </TableCell>
                   </TableRow>
                 ))
