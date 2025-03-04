@@ -202,7 +202,7 @@ const DonationTable = ({
         .from(element)
         .outputPdf("datauristring")
         .then((dataUri) => {
-          console.log("Generated data URI:", dataUri); // Debugging line
+          // console.log("Generated data URI:", dataUri);
           let base64Content;
 
           if (dataUri.startsWith(base64Prefix)) {
@@ -213,7 +213,7 @@ const DonationTable = ({
             reject(new Error("Invalid data URI format"));
           }
 
-          resolve(base64Content); // Return only the raw base64 content
+          resolve(base64Content);
         })
         .catch((error) => reject(error));
     });
@@ -412,7 +412,7 @@ const DonationTable = ({
       const donorDetails = {
         donorFName: i.donorFName,
         donorLName: i.donorLName,
-        donorEmail: "darshatakvyas@gmail.com",
+        donorEmail: i.donorEmail,
         ngoName: parsedData.NGO_NAME,
         contactPerson: parsedData.FNAME + " " + parsedData.LNAME,
         ngoContactNo: parsedData.CONTACT_NUMBER,
