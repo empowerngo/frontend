@@ -163,11 +163,13 @@ const DonationTable = ({
     setShowForm(true);
   };
 
-  const generateFullPagePDF = (element) => {
+  const generateFullPagePDF = (element, donation) => {
     // Define PDF generation options
     const options = {
       margin: [0, 0, 0, 0], // Top, Right, Bottom, Left margins
-      filename: "resume.pdf", // Output file name
+      filename: ` ${donation.donorFName}_${donation.donorLName}_${formatDate(
+        donation.donationDate
+      )}.pdf`,
       image: { type: "jpeg", quality: 0.98 }, // Image quality
       html2canvas: { scale: 2, useCORS: true, letterRendering: true }, // Canvas rendering options
       jsPDF: {
@@ -335,7 +337,7 @@ const DonationTable = ({
     setTimeout(() => {
       const receiptElement =
         hiddenContainer.querySelector(".receipt-container");
-      generateFullPagePDF(receiptElement);
+      generateFullPagePDF(receiptElement, donation);
 
       document.body.removeChild(hiddenContainer);
       document.head.removeChild(style);
@@ -454,9 +456,7 @@ const DonationTable = ({
               <TableCell className="font-semibold text-gray-700">
                 Mobile
               </TableCell>
-              <TableCell className="font-semibold text-gray-700">
-                PAN
-              </TableCell>
+              <TableCell className="font-semibold text-gray-700">PAN</TableCell>
               <TableCell className="font-semibold text-gray-700">
                 Amount
               </TableCell>
