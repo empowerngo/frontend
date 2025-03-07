@@ -97,8 +97,12 @@ const PaymentDetails = ({
 
     setLoading(true);
     setTimeout(() => {
-      const filteredDonors = allDonars.filter((donor) =>
-        donor.donorFName.toLowerCase().includes(searchTerm.toLowerCase())
+      const filteredDonors = allDonars.filter(
+        (donor) =>
+          donor.donorFName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          donor.donorLName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          donor.donorPAN.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          donor.donorMobile.toLowerCase().includes(searchTerm.toLowerCase())
       );
 
       if (filteredDonors.length === 0) {
@@ -174,7 +178,7 @@ const PaymentDetails = ({
       handleCancel();
     } else {
       setSelectedRow(donor);
-      setSelectedDonar(donor.donorFName);
+      setSelectedDonar(donor.donorFName + " " + donor.donorLName);
       setShowForm(true);
     }
   };
@@ -299,12 +303,12 @@ const PaymentDetails = ({
             Enter Keyword (Search)
           </h3>
           <p className="text-gray-500 text-sm mb-2">
-            (Name, Code, or Mobile No.)
+            (Name, Pan, or Mobile No.)
           </p>
           <div className="flex gap-2">
             <input
               type="text"
-              placeholder="Keyword (Name, Code or Mobile No.)"
+              placeholder="Keyword (Name, Pan or Mobile No.)"
               className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={searchTerm}
               onChange={(e) => {
