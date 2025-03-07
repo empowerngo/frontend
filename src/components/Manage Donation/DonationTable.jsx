@@ -429,8 +429,7 @@ const DonationTable = ({
       const donorDetails = {
         donorFName: i.donorFName,
         donorLName: i.donorLName,
-        // donorEmail: i.donorEmail,
-        donorEmail: "dev.darshatak@gmail.com",
+        donorEmail: i.donorEmail,
         ngoName: parsedData.NGO_NAME,
         contactPerson: parsedData.FNAME + " " + parsedData.LNAME,
         ngoContactNo: parsedData.CONTACT_NUMBER,
