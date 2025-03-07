@@ -27,8 +27,8 @@ const DonationTable = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [donations, setdonations] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1); // State for current page
-  const rowsPerPage = 10; // Number of rows to display per page
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 10;
   const userData = localStorage.getItem("user");
 
   const [donors, setDonors] = useState([]);
@@ -163,25 +163,6 @@ const DonationTable = ({
     setShowForm(true);
   };
 
-  const generateFullPagePDF = (element, donation) => {
-    // Define PDF generation options
-    const options = {
-      margin: [0, 0, 0, 0], // Top, Right, Bottom, Left margins
-      filename: ` ${donation.donorFName}_${donation.donorLName}_${formatDate(
-        donation.donationDate
-      )}.pdf`,
-      image: { type: "jpeg", quality: 0.98 }, // Image quality
-      html2canvas: { scale: 2, useCORS: true, letterRendering: true }, // Canvas rendering options
-      jsPDF: {
-        unit: "pt",
-        format: "a4",
-        orientation: "portrait",
-      },
-      pagebreak: { mode: ["avoid-all", "css", "legacy"] },
-    };
-
-    html2pdf().set(options).from(element).save();
-  };
   const GeneratePdf = (element, donation) => {
     const options = {
       margin: [0, 0, 0, 0],
@@ -189,9 +170,8 @@ const DonationTable = ({
         donation.donationDate
       )}.pdf`,
       image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+      html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0 },
       jsPDF: { unit: "pt", format: "a4", orientation: "portrait" },
-      pagebreak: { mode: ["avoid-all", "css", "legacy"] },
     };
 
     const base64Prefix = "data:application/pdf;base64,";
@@ -200,6 +180,7 @@ const DonationTable = ({
       html2pdf()
         .set(options)
         .from(element)
+        .toPdf()
         .outputPdf("datauristring")
         .then((dataUri) => {
           // console.log("Generated data URI:", dataUri);
@@ -238,68 +219,7 @@ const DonationTable = ({
     return formattedDate;
   };
 
-  const ReceiptCreator = (donation, i) => {
-    const receiptHtml = renderToString(
-      <DonationReceipt receiptData={donation} />
-    );
-
-    const newWindow = window.open();
-    newWindow.document.write(`
-        <html>
-          <head>
-            <title>Donation Receipt</title>
-            <script src="https://cdn.tailwindcss.com"></script>
-            <style>
-              /* Ensure full-page A4 size */
-              @page { size: A4; margin: 0; }
-
-              body {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                background-color: black;
-                height: 100vh;
-                margin: 0;
-              }
-
-              .receipt-container {
-                width: 794px; /* A4 width */
-                height: 1123px; /* A4 height */
-                background: black;
-                padding: 20px;
-                box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-              }
-
-              /* Ensure A4 format when printing */
-              @media print {
-            @page { size: A4; margin: 0; }
-            body { background: none; }
-            .receipt-container {
-              width: 100%;
-              height: 100%;
-              box-shadow: none;
-              }
-  }
-
-            </style>
-          </head>
-          <body>
-            <div class="receipt-container">${receiptHtml}</div>
-          </body>
-        </html>
-      `);
-    newWindow.document.close();
-
-    // setTimeout(() => {
-    //   generateFullPagePDF(newWindow.document.body);
-    // }, 1000);
-  };
-
-  const DownloadReceipt = (donation, i) => {
+  const pdfViewReceipt = (donation, i) => {
     const receiptHtml = renderToString(
       <DonationReceipt receiptData={donation} />
     );
@@ -322,7 +242,6 @@ const DonationTable = ({
         width: 794px; /* A4 width */
         height: 1123px; /* A4 height */
         background: white;
-        padding: 20px;
         box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
         display: flex;
         flex-direction: column;
@@ -344,9 +263,103 @@ const DonationTable = ({
     document.head.appendChild(style);
 
     setTimeout(() => {
-      const receiptElement =
-        hiddenContainer.querySelector(".receipt-container");
-      generateFullPagePDF(receiptElement, donation);
+      const element = hiddenContainer.querySelector(".receipt-container");
+      const options = {
+        margin: 0,
+        filename: "Donation_Receipt.pdf",
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true }, // Ensures external images load
+        jsPDF: { unit: "pt", format: "a4", orientation: "portrait" },
+      };
+
+      html2pdf()
+        .set(options)
+        .from(element)
+        .toPdf()
+        .get("pdf")
+        .then((pdf) => {
+          const pdfBlob = pdf.output("blob");
+          const pdfUrl = URL.createObjectURL(pdfBlob);
+          window.open(pdfUrl, "_blank");
+        });
+
+      document.body.removeChild(hiddenContainer);
+      document.head.removeChild(style);
+    }, 500);
+  };
+  const pdfDownloadReceipt = (donation, i) => {
+    const receiptHtml = renderToString(
+      <DonationReceipt receiptData={donation} />
+    );
+
+    const hiddenContainer = document.createElement("div");
+    hiddenContainer.style.position = "absolute";
+    hiddenContainer.style.top = "-9999px";
+    hiddenContainer.style.left = "-9999px";
+    hiddenContainer.innerHTML = `
+      <div class="receipt-container">
+        ${receiptHtml}
+      </div>
+    `;
+
+    document.body.appendChild(hiddenContainer);
+
+    const style = document.createElement("style");
+    style.innerHTML = `
+      .receipt-container {
+        width: 794px; /* A4 width */
+        height: 1123px; /* A4 height */
+        background: white;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden; /* Prevent content overflow */
+      }
+  
+      @media print {
+        @page { size: A4; margin: 0; }
+        body { background: none; }
+        .receipt-container {
+          width: 100%;
+          height: 100%;
+          box-shadow: none;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+
+    setTimeout(() => {
+      const element = hiddenContainer.querySelector(".receipt-container");
+      const options = {
+        margin: 0,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: "pt", format: "a4", orientation: "portrait" },
+      };
+
+      html2pdf()
+        .set(options)
+        .from(element)
+        .toPdf()
+        .get("pdf")
+        .then((pdf) => {
+          const pdfBlob = pdf.output("blob");
+          const pdfUrl = URL.createObjectURL(pdfBlob);
+          // window.open(pdfUrl, "_blank");
+
+          setTimeout(() => {
+            const a = document.createElement("a");
+            a.href = pdfUrl;
+            a.download = `${donation.donorFName}_${
+              donation.donorLName
+            }_${formatDate(donation.donationDate)}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          }, 1000);
+        });
 
       document.body.removeChild(hiddenContainer);
       document.head.removeChild(style);
@@ -361,6 +374,7 @@ const DonationTable = ({
       hiddenContainer.style.position = "absolute";
       hiddenContainer.style.top = "-9999px";
       hiddenContainer.style.left = "-9999px";
+
       hiddenContainer.innerHTML = `
         <div class="receipt-container">
           ${receiptHtml}
@@ -371,33 +385,36 @@ const DonationTable = ({
 
       const style = document.createElement("style");
       style.innerHTML = `
-        .receipt-container {
-          width: 794px; /* A4 width */
-          height: 1123px; /* A4 height */
-          background: white;
-          padding: 20px;
-          box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-          overflow: hidden; /* Prevent content overflow */
-        }
+      .receipt-container {
+        width: 794px; /* A4 width */
+        min-height: 1120px; /* A4 height */
+        max-height: 1120px; /* Prevent overflow */
+        background: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+      }
     
-        @media print {
-          @page { size: A4; margin: 0; }
-          body { background: none; }
-          .receipt-container {
-            width: 100%;
-            height: 100%;
-            box-shadow: none;
-          }
+      @media print {
+        @page { size: A4; margin: 0; }
+        body { background: none; }
+        .receipt-container {
+          width: 794px;
+          height: 1120px;
+          overflow: hidden;
+          page-break-after: avoid; /* Prevent extra pages */
         }
-      `;
+      }
+    `;
       document.head.appendChild(style);
 
       const receiptElement =
         hiddenContainer.querySelector(".receipt-container");
+
+      receiptElement.style.height = "1123px"; // Force single page
+      receiptElement.style.overflow = "hidden"; // Prevent extra content from forcing a new page
 
       const base64Pdf = await GeneratePdf(receiptElement, i);
 
@@ -412,7 +429,8 @@ const DonationTable = ({
       const donorDetails = {
         donorFName: i.donorFName,
         donorLName: i.donorLName,
-        donorEmail: i.donorEmail,
+        // donorEmail: i.donorEmail,
+        donorEmail: "dev.darshatak@gmail.com",
         ngoName: parsedData.NGO_NAME,
         contactPerson: parsedData.FNAME + " " + parsedData.LNAME,
         ngoContactNo: parsedData.CONTACT_NUMBER,
@@ -506,7 +524,7 @@ const DonationTable = ({
                     aria-label="visibility"
                     className="text-green-500 hover:text-green-700"
                     onClick={() => {
-                      ReceiptCreator(donation, index);
+                      pdfViewReceipt(donation, index);
                     }}
                   >
                     <Visibility />
@@ -515,7 +533,7 @@ const DonationTable = ({
                     aria-label="visibility"
                     className="text-green-500 hover:text-green-700"
                     onClick={() => {
-                      DownloadReceipt(donation, index);
+                      pdfDownloadReceipt(donation, index);
                     }}
                   >
                     <Download />
