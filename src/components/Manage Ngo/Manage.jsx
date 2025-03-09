@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import ManageNGOForm from "../Manage Ngo/ManageNgo";
-import ManageNGOTable from "../Manage Ngo/ManageNGOTable";
+import ManageNGOForm from "./AddNGO";
+import ManageNGOTable from "./NgoTable";
 import Loading from "../LoadingSpinner";
 
 const Manage = () => {
