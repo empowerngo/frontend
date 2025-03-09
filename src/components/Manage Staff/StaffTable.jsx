@@ -27,7 +27,7 @@ const StaffTable = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [loading, setLoading] = useState(false); 
 
-  useEffect(() => {
+  
     const fetchUserList = async () => {
       setLoading(true); 
       try {
@@ -39,6 +39,7 @@ const StaffTable = () => {
         setLoading(false);
       }
     };
+    useEffect(() => {
     fetchUserList();
   }, []);
 
@@ -74,6 +75,7 @@ const StaffTable = () => {
 
   const handleEditClose = () => {
     setEditOpen(false);
+    fetchUserList();
     setSelectedUser(null);
   };
 
