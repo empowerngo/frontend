@@ -186,8 +186,8 @@ const AddStaff = ({ onAddOrUpdateStaff, editStaff, setEditStaff }) => {
             >
               <option value="">Select an NGO</option>
               {ngoList.map((ngo) => (
-                <option key={ngo.NGO_ID} value={ngo.NGO_ID}>
-                  {ngo.NGO_NAME}
+                <option key={ngo.ngoID} value={ngo.ngoID}>
+                  {ngo.ngoName}
                 </option>
               ))}
             </select>
