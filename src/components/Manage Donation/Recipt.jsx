@@ -38,6 +38,7 @@ export default function DonationReceipt({ receiptData }) {
             <div>
               <h1 className="text-4xl font-extrabold text-green-700">
                 {parsedData.NGO_NAME}
+                <br />
               </h1>
               <div className="p-2 text-start pl-10 grid grid-cols-3 gap-2">
                 {[
@@ -149,10 +150,10 @@ export default function DonationReceipt({ receiptData }) {
           <div className="flex justify-center items-center mt-6 border-t border-green-600 pt-4 pb-4">
             <div className="text-left">
               <p className="text-gray-700 font-medium">
-                {parsedData.NGO_ADDRESS}
+               Address -  {parsedData.NGO_ADDRESS}
               </p>
               <p className="text-gray-700 font-medium">
-                {parsedData.CONTACT_NUMBER}
+                Contact No. - {parsedData.CONTACT_NUMBER}
               </p>
             </div>
           </div>
