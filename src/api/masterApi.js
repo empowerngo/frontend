@@ -342,3 +342,26 @@ export const sendEmail = async (donorDetails, receiptAttachment) => {
     throw error.response?.data || error.message;
   }
 };
+
+export const handleNGORequest = async (formData, reqType) => {
+  try {
+    console.log("Inside handleNGORequest ");
+    if (!["s", "u"].includes(reqType)) {
+      throw new Error(
+        "Invalid reqType. Must be 's' for save or 'u' for update."
+      );
+    }
+    if (reqType === "u") {
+      if (!formData.ngoID) {
+        throw new Error("NGO ID is required for updating NGO details.");
+      }
+    }
+    const payload = { ...formData, reqType };
+    const response = await api.post("/manageNGO", payload);
+    console.log("response.data -  ", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error handling NGO request:", error);
+    throw error.response?.data || error.message;
+  }
+};
