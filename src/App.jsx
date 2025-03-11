@@ -19,6 +19,7 @@ import Manage from "./components/Manage Ngo/Manage";
 import Loading from "./components/LoadingSpinner";
 import ManageDonation from "./components/Manage Donation/ManageDonation";
 import ManagePlan from "./components/Manage Plan/ManagePlan";
+import Form10BE from "./components/form10be/Form10BE";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -116,6 +117,14 @@ function App() {
               element={
                 <ProtectedRoute allowedRoles={[ROLES.SUPER_ADMIN]}>
                   <Manage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="From10BE"
+              element={
+                <ProtectedRoute allowedRoles={[ROLES.SUPER_ADMIN]}>
+                  <Form10BE />
                 </ProtectedRoute>
               }
             />

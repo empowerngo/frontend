@@ -11,45 +11,52 @@ import {
 } from "@mui/material";
 import { getSubsPlans, registerPlan } from "../../api/masterApi";
 
-const EditPlanForm = ({ open, onClose, planID }) => {
-  const [planDetails, setPlanDetails] = useState({});
+const EditPlanForm = ({ open, onClose, planID, user }) => {
+  const [planDetails, setPlanDetails] = useState({
+    PLAN_ID: user?.planID || "",
+    PLAN_NAME: user?.planName || "",
+    PLAN_PRICE: user?.planPrice || "",
+    PLAN_STATUS: user?.PLAN_STATUS || "",
+    NUMBER_OF_USERS: user?.numberOfUsers || "",
+    NUMBER_OF_DONORS: user?.numberOfDonors || "",
+    NUMBER_OF_DONATIONS: user?.numberOfDonations || "",
+    FORM_10BE_REPORT: user?.form10BEReport || "",
+  });
   const [loading, setLoading] = useState(false);
 
-  const [signaturePreview, setSignaturePreview] = useState(null);
-
-  useEffect(() => {
-    if (planID) {
-      setLoading(true);
-      getSubsPlans("fetch", planID)
-        .then((response) => {
-          if (response?.payload) {
-            const data = response.payload;
-            setNgoDetails({
-              PLAN_ID: data?.PLAN_ID || "",
-              PLAN_NAME: data?.PLAN_NAME || "",
-              PLAN_PRICE: data?.PLAN_PRICE || "",
-              PLAN_STATUS: data?.PLAN_STATUS || "",
-              NUMBER_OF_USERS: data?.NUMBER_OF_USERS || "",
-              NUMBER_OF_DONORS: data?.NUMBER_OF_DONORS || "",
-              NUMBER_OF_DONATIONS: data?.NUMBER_OF_DONATIONS || "",
-              FORM_10BE_REPORT: data?.FORM_10BE_REPORT || "",
-
-            });
-            setLogoPreview(data?.LOGO_URL);
-            setSignaturePreview(data?.SIGNATURE_URL);
-          }
-        })
-        .catch((error) => console.error("Error fetching NGO details:", error))
-        .finally(() => setLoading(false));
-    }
-  }, [planID]);
-
+  // useEffect(() => {
+  //   if (planID) {
+  //     setLoading(true);
+  //     getSubsPlans("fetch", planID)
+  //       .then((response) => {
+  //         if (response?.payload) {
+  //           const data = response.payload;
+  //           setNgoDetails({
+  //             PLAN_ID: data?.PLAN_ID || "",
+  //             PLAN_NAME: data?.PLAN_NAME || "",
+  //             PLAN_PRICE: data?.PLAN_PRICE || "",
+  //             PLAN_STATUS: data?.PLAN_STATUS || "",
+  //             NUMBER_OF_USERS: data?.NUMBER_OF_USERS || "",
+  //             NUMBER_OF_DONORS: data?.NUMBER_OF_DONORS || "",
+  //             NUMBER_OF_DONATIONS: data?.NUMBER_OF_DONATIONS || "",
+  //             FORM_10BE_REPORT: data?.FORM_10BE_REPORT || "",
+  //           });
+  //           setLogoPreview(data?.LOGO_URL);
+  //           setSignaturePreview(data?.SIGNATURE_URL);
+  //         }
+  //       })
+  //       .catch((error) => console.error("Error fetching NGO details:", error))
+  //       .finally(() => setLoading(false));
+  //   }
+  // }, [planID]);
   const handleChange = (e) => {
     setPlanDetails((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-    const handleSave = async () => {
-    if (!planDetails.NGO_NAME || planDetails.PLAN_NAME.trim() === "") {
+  const handleSave = async () => {
+    console.log("planDetails before appending:", planDetails);
+
+    if (planDetails.PLAN_NAME.trim() === "") {
       alert("Error: Plan Name is required.");
       return;
     }
@@ -61,16 +68,17 @@ const EditPlanForm = ({ open, onClose, planID }) => {
           formData.append(key, planDetails[key]);
         }
       });
+      console.log(formData);
       formData.append("reqType", "u");
 
-      const response = await registerPlan(formData);
-      console.log("response -- ", response)
-      if (response?.status === "FAILURE") {
-        alert(`Error: ${response.message}`);
-      } else {
-        alert("Plan details saved successfully!");
-        onClose();
-      }
+      // const response = await registerPlan(formData);
+      // console.log("response -- ", response);
+      // if (response?.status === "FAILURE") {
+      //   alert(`Error: ${response.message}`);
+      // } else {
+      //   alert("Plan details saved successfully!");
+      //   onClose();
+      // }
     } catch (error) {
       console.error("Error saving Plan details:", error);
       alert("Failed to save Plan details.");

@@ -496,14 +496,19 @@ const DonationTable = ({
               <TableCell className="font-semibold text-gray-700">
                 Amount
               </TableCell>
-
-              <TableCell className="font-semibold text-gray-700">
-                Receipt
-              </TableCell>
-
-              <TableCell className="font-semibold text-gray-700">
-                Action
-              </TableCell>
+              {parsedData.ROLE_CODE === 4 || 3 ? (
+                ""
+              ) : (
+                <>
+                  {" "}
+                  <TableCell className="font-semibold text-gray-700">
+                    Receipt
+                  </TableCell>
+                  <TableCell className="font-semibold text-gray-700">
+                    Action
+                  </TableCell>
+                </>
+              )}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -518,49 +523,55 @@ const DonationTable = ({
                 <TableCell>{donation.donorMobile}</TableCell>
                 <TableCell>{donation.donorPAN}</TableCell>
                 <TableCell>{donation.amount}</TableCell>
-                <TableCell>
-                  <IconButton
-                    aria-label="visibility"
-                    className="text-green-500 hover:text-green-700"
-                    onClick={() => {
-                      pdfViewReceipt(donation, index);
-                    }}
-                  >
-                    <Visibility />
-                  </IconButton>
-                  <IconButton
-                    aria-label="visibility"
-                    className="text-green-500 hover:text-green-700"
-                    onClick={() => {
-                      pdfDownloadReceipt(donation, index);
-                    }}
-                  >
-                    <Download />
-                  </IconButton>
-                  <IconButton
-                    aria-label="send mail"
-                    className="text-green-500 hover:text-green-700"
-                    onClick={() => {
-                      ShareReceipt(donation);
-                    }}
-                  >
-                    <Send />
-                  </IconButton>
-                </TableCell>
-
-                <TableCell>
-                  <div className="flex space-x-2">
-                    <IconButton
-                      aria-label="edit"
-                      className="text-blue-500 hover:text-blue-700"
-                      onClick={() => {
-                        EditRow(donation, index);
-                      }}
-                    >
-                      <Edit />
-                    </IconButton>
-                  </div>
-                </TableCell>
+                {parsedData.ROLE_CODE === 4 || 3 ? (
+                  ""
+                ) : (
+                  <>
+                    {" "}
+                    <TableCell>
+                      <IconButton
+                        aria-label="visibility"
+                        className="text-green-500 hover:text-green-700"
+                        onClick={() => {
+                          pdfViewReceipt(donation, index);
+                        }}
+                      >
+                        <Visibility />
+                      </IconButton>
+                      <IconButton
+                        aria-label="visibility"
+                        className="text-green-500 hover:text-green-700"
+                        onClick={() => {
+                          pdfDownloadReceipt(donation, index);
+                        }}
+                      >
+                        <Download />
+                      </IconButton>
+                      <IconButton
+                        aria-label="send mail"
+                        className="text-green-500 hover:text-green-700"
+                        onClick={() => {
+                          ShareReceipt(donation);
+                        }}
+                      >
+                        <Send />
+                      </IconButton>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex space-x-2">
+                        <IconButton
+                          aria-label="edit"
+                          className="text-blue-500 hover:text-blue-700"
+                          onClick={() => {
+                            EditRow(donation, index);
+                          }}
+                        >
+                          <Edit />
+                        </IconButton>
+                      </div>
+                    </TableCell>
+                  </>
+                )}
               </TableRow>
             ))}
           </TableBody>

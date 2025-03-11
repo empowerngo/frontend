@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
-
+import { State, City, Country } from "country-state-city";
 import {
   FaUser,
   FaMapMarkerAlt,
@@ -12,7 +12,7 @@ import {
   FaPhone,
   FaEnvelope,
   FaBriefcase,
-  FaIdCard
+  FaIdCard,
 } from "react-icons/fa";
 
 import renderInputField from "../CustomInputField";
@@ -30,15 +30,58 @@ import Loading from "../LoadingSpinner";
 //   } = useForm();
 
 const DonorForm = () => {
-  const [loading, setLoading] = useState(false);
   const {
     register,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
+    watch,
+    setValue,
   } = useForm({
     mode: "onBlur", // Trigger validation on blur
   });
+  const [loading, setLoading] = useState(false);
+  const [stateData, setStateData] = useState([]);
+  const [cityData, setCityData] = useState([]);
+  const selectedCountry = watch("ngoCountry");
+  const selectedState = watch("ngoState");
+
+  const countryData = Country.getAllCountries().map((country) => ({
+    value: country.isoCode,
+    displayValue: country.name,
+  }));
+
+  // Update States when country changes
+  useEffect(() => {
+    if (selectedCountry) {
+      console.log(selectedCountry);
+      const states = State.getStatesOfCountry(selectedCountry).map((state) => ({
+        value: state.isoCode,
+        displayValue: state.name,
+      }));
+      setStateData(states);
+      setValue("ngoState", ""); // Reset state selection
+      setCityData([]); // Reset cities
+    } else {
+      setStateData([]);
+    }
+  }, [selectedCountry, setValue]);
+
+  // Update Cities when state changes
+  useEffect(() => {
+    if (selectedState) {
+      const cities = City.getCitiesOfState(selectedCountry, selectedState).map(
+        (city) => ({
+          value: city.isoCode,
+          displayValue: city.name,
+        })
+      );
+      setCityData(cities);
+      setValue("ngoCity", ""); // Reset city selection
+    } else {
+      setCityData([]);
+    }
+  }, [selectedState, selectedCountry, setValue]);
 
   const onSubmit = async (formData) => {
     try {
@@ -61,13 +104,14 @@ const DonorForm = () => {
         title: "Success!",
         text: "Donor added successfully!",
         icon: "success",
-        confirmButtonText: "OK"
+        confirmButtonText: "OK",
       });
       reset();
     } catch (error) {
       console.error("Error submitting donor data:", error);
       toast.error(
-        `Error: ${error.response?.data?.message || "Failed to submit donor details"
+        `Error: ${
+          error.response?.data?.message || "Failed to submit donor details"
         }`
       );
     } finally {
@@ -127,32 +171,35 @@ const DonorForm = () => {
           {renderInputField(
             register,
             errors,
-            "City",
-            "donorCity",
-            validateField("donorCity"),
-            "text",
-            "Enter city",
-            FaCity
+            "Country",
+            "ngoCountry",
+            validateField("ngoCountry"),
+            "select", // ✅ Changed from "text" to "select"
+            "Select Country",
+            FaGlobe,
+            { options: countryData } // ✅ Pass the fetched country list as dropdown options
           )}
           {renderInputField(
             register,
             errors,
             "State",
-            "donorState",
-            validateField("donorState"),
-            "text",
-            "Enter state",
-            FaGlobe
-          )}
+            "ngoState",
+            validateField("ngoState"),
+            "select",
+            "Enter State",
+            FaGlobe,
+            { options: stateData }
+          )}{" "}
           {renderInputField(
             register,
             errors,
-            "Country",
-            "donorCountry",
-            validateField("donorCountry"),
-            "text",
-            "Enter country",
-            FaGlobe
+            "City",
+            "ngoCity",
+            validateField("ngoCity"),
+            "select",
+            "Enter City",
+            FaCity,
+            { options: cityData }
           )}
           {renderInputField(
             register,

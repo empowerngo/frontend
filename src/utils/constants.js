@@ -46,13 +46,13 @@ export const menuItems = [
     title: "Manage Donor",
     icon: "DocumentTextIcon",
     route: "/adddonor",
-    roles: [2,3],
+    roles: [2, 3],
   },
   {
     title: "Manage Donations",
     icon: "CurrencyDollarIcon",
     route: "/manageDonation",
-    roles: [2,3, 4],
+    roles: [2, 3, 4],
   },
   {
     title: "Manage NGOs",
@@ -66,12 +66,19 @@ export const menuItems = [
     route: "/addproject",
     roles: [2],
   },
+
   {
-    title:"Manage Plan",
+    title: "Manage Plan",
     icon: "ChartBarIcon",
     route: "/managePlan",
     roles: [1],
-  }
+  },
+  {
+    title: "Form 10 BE",
+    icon: "NewspaperIcon",
+    route: "/From10BE",
+    roles: [1],
+  },
 ];
 
 export default ROLES;

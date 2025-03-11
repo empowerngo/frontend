@@ -85,7 +85,7 @@ const PaymentDetails = ({
   //   { name: "Jane Smith", mobile: "9876543210", pan: "XYZW5678K" },
   // ];
 
-  const projectPurposes = parsedData.PROJECTS.reduce((acc, project) => {
+  const projectPurposes = parsedData?.PROJECTS?.reduce((acc, project) => {
     acc[project.PROJECT_NAME] = project.PURPOSES.map((p) => p.PURPOSE_NAME);
     return acc;
   }, {});

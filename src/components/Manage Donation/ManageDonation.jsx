@@ -20,27 +20,34 @@ const ManageDonation = () => {
     transactionID: "",
   });
   const [showForm, setShowForm] = useState(false);
+  const userData = localStorage.getItem("user");
+  let parsedData = JSON.parse(userData);
 
   return (
     <div className="p-6 h-full w-full">
-      <UploadBankStatement
-        selectedTransaction={selectedTransaction}
-        onSelectTransaction={setSelectedTransaction}
-        setisSearchDisable={setisSearchDisable}
-        setSelectedDonationTable={setSelectedDonationTable}
-        setShowForm={setShowForm}
-      />
-
-      <PaymentDetails
-        selectedTransaction={selectedTransaction}
-        setSelectedTransaction={setSelectedTransaction}
-        selectedDonationTable={selectedDonationTable}
-        setSelectedDonationTable={setSelectedDonationTable}
-        formData={formData}
-        setFormData={setFormData}
-        showForm={showForm}
-        setShowForm={setShowForm}
-      />
+      {parsedData.ROLE_CODE === 4 || 3 ? (
+        ""
+      ) : (
+        <>
+          <UploadBankStatement
+            selectedTransaction={selectedTransaction}
+            onSelectTransaction={setSelectedTransaction}
+            setisSearchDisable={setisSearchDisable}
+            setSelectedDonationTable={setSelectedDonationTable}
+            setShowForm={setShowForm}
+          />
+          <PaymentDetails
+            selectedTransaction={selectedTransaction}
+            setSelectedTransaction={setSelectedTransaction}
+            selectedDonationTable={selectedDonationTable}
+            setSelectedDonationTable={setSelectedDonationTable}
+            formData={formData}
+            setFormData={setFormData}
+            showForm={showForm}
+            setShowForm={setShowForm}
+          />
+        </>
+      )}
 
       <DonationTable
         setSelectedDonationTable={setSelectedDonationTable}

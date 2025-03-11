@@ -27,8 +27,8 @@ const renderInputField = (
           >
             <option value="">{placeholder}</option>
             {selectProps?.options?.map((option) => (
-              <option key={option} value={option}>
-                {option}
+              <option key={option.value} value={option.value}>
+                {option.displayValue}
               </option>
             ))}
           </select>

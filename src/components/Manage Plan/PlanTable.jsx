@@ -27,6 +27,7 @@ const PlanTable = () => {
     const fetchPlans = async () => {
       try {
         const response = await getSubsPlans();
+        console.log(response);
         setPlanList(response?.payload || []);
       } catch (err) {
         console.error("Failed to fetch User data", err);
@@ -37,21 +38,25 @@ const PlanTable = () => {
 
   const filteredStaff = useMemo(() => {
     if (!Array.isArray(planList) || !searchTerm) {
-        return planList;
+      return planList;
     }
 
     const lowerCaseSearchTerm = searchTerm.toLowerCase();
 
     return planList.filter((plan) => {
-        const nameMatch = (plan.PLAN_NAME || "").toLowerCase().includes(lowerCaseSearchTerm);
-        const planStatus = (plan.STATUS || "").toLowerCase().includes(lowerCaseSearchTerm);
-        // Return true if ANY of the fields match the search term
-        return nameMatch || planStatus ;
+      const nameMatch = (plan.PLAN_NAME || "")
+        .toLowerCase()
+        .includes(lowerCaseSearchTerm);
+      const planStatus = (plan.STATUS || "")
+        .toLowerCase()
+        .includes(lowerCaseSearchTerm);
+      // Return true if ANY of the fields match the search term
+      return nameMatch || planStatus;
     });
-}, [planList, searchTerm]);
+  }, [planList, searchTerm]);
 
   const handleEdit = (plan) => {
-    setSelectedPlan(plan); // Pass full staff object for editing
+    setSelectedPlan(plan);
     setEditOpen(true);
   };
 
@@ -86,7 +91,18 @@ const PlanTable = () => {
         <Table>
           <TableHead>
             <TableRow>
-              {["ID","Name", "Plan Price", "Status", "No. Of Users", "No. Of Donors", "No. Of Donations", "FORM10BE Report", "CR Date", "Actions"].map((heading) => (
+              {[
+                "ID",
+                "Name",
+                "Plan Price",
+                "Status",
+                "No. Of Users",
+                "No. Of Donors",
+                "No. Of Donations",
+                "FORM10BE Report",
+                "CR Date",
+                "Actions",
+              ].map((heading) => (
                 <TableCell key={heading}>
                   <b>{heading}</b>
                 </TableCell>
@@ -101,24 +117,33 @@ const PlanTable = () => {
                 </TableCell>
               </TableRow>
             ) : (
-              filteredStaff.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((plan, index) => (
-                <TableRow key={index}>
-                  <TableCell>{plan.PLAN_ID}</TableCell>
-                  <TableCell>{plan.PLAN_NAME}</TableCell>
-                  <TableCell>{plan.PLAN_PRICE}</TableCell>
-                  <TableCell>{plan.PLAN_STATUS}</TableCell>
-                  <TableCell>{plan.NUMBER_OF_USERS}</TableCell>
-                  <TableCell>{plan.NUMBER_OF_DONORS}</TableCell>
-                  <TableCell>{plan.NUMBER_OF_DONATIONS}</TableCell>
-                  <TableCell>{plan.FORM_10BE_REPORT}</TableCell>
-                  <TableCell>{plan.CREATED_AT}</TableCell>
-                  <TableCell>
-                    <Button variant="contained" color="primary" size="small" onClick={() => handleEdit(plan)}>
-                      Edit
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))
+              filteredStaff
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((plan, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{plan.planID}</TableCell>
+                    <TableCell>{plan.planName}</TableCell>
+                    <TableCell>{plan.planPrice}</TableCell>
+                    <TableCell>{plan.PLAN_STATUS}</TableCell>
+                    <TableCell>{plan.numberOfUsers}</TableCell>
+                    <TableCell>{plan.numberOfDonors}</TableCell>
+                    <TableCell>{plan.numberOfDonations}</TableCell>
+                    <TableCell>
+                      {plan.form10BEReport === 1 ? "Yes" : "No"}
+                    </TableCell>
+                    <TableCell>{plan.CREATED_AT}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        onClick={() => handleEdit(plan)}
+                      >
+                        Edit
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
             )}
           </TableBody>
         </Table>
@@ -138,7 +163,11 @@ const PlanTable = () => {
 
       {/* Render Edit User Form */}
       {editOpen && selectedPlan && (
-        <EditPlanForm open={editOpen} onClose={handleEditClose} user={selectedPlan} />
+        <EditPlanForm
+          open={editOpen}
+          onClose={handleEditClose}
+          user={selectedPlan}
+        />
       )}
     </Paper>
   );

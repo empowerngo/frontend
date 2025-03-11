@@ -7,6 +7,7 @@ import renderInputField from "../CustomInputField";
 import Loading from "../LoadingSpinner";
 import { validateField } from "./validation";
 import { ToastContainer, toast } from "react-toastify";
+import { State, City, Country } from "country-state-city";
 import {
   FaUser,
   FaMapMarkerAlt,
@@ -15,7 +16,7 @@ import {
   FaPhone,
   FaEnvelope,
   FaBriefcase,
-  FaIdCard
+  FaIdCard,
 } from "react-icons/fa";
 const RegisterNGO = () => {
   const {
@@ -24,44 +25,58 @@ const RegisterNGO = () => {
     formState: { errors },
     reset,
     watch,
-    setValue
+    setValue,
   } = useForm({
-    mode: "onBlur" // Trigger validation on blur
+    mode: "onBlur", // Trigger validation on blur
   });
   const [countries, setCountries] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const selectedCountry = watch("ngoCountry");
+  const selectedState = watch("ngoState");
   const selectedLogo = watch("logoURL");
   const selectedSignature = watch("signatureURL");
+  // State variables for dynamic dropdowns
+  const [stateData, setStateData] = useState([]);
+  const [cityData, setCityData] = useState([]);
 
+  const countryData = Country.getAllCountries().map((country) => ({
+    value: country.isoCode,
+    displayValue: country.name,
+  }));
+
+  // Update States when country changes
   useEffect(() => {
-    const fetchCountries = async () => {
-      try {
-        const response = await fetch("https://restcountries.com/v3.1/all");
-        if (!response.ok) throw new Error("Failed to fetch countries");
-        const data = await response.json();
-  
-        const countryList = data.map(c => c.name.common).sort();
-        setCountries(countryList);
-  
-        // ✅ Ensure default value is set AFTER state update
-        if (countryList.includes("India")) {
-          setTimeout(() => setValue("ngoCountry", "India"), 0);
-        }
-      } catch (err) {
-        console.error("Error fetching countries:", err);
-        Swal.fire({
-          icon: "error",
-          title: "Oops!",
-          text: "Error fetching country list!",
-        });
-      }
-    };
-  
-    fetchCountries();
-  }, [setValue]); // ✅ Ensure setValue is in the dependency array
-  
-  
+    if (selectedCountry) {
+      console.log(selectedCountry);
+      const states = State.getStatesOfCountry(selectedCountry).map((state) => ({
+        value: state.isoCode,
+        displayValue: state.name,
+      }));
+      setStateData(states);
+      setValue("ngoState", ""); // Reset state selection
+      setCityData([]); // Reset cities
+    } else {
+      setStateData([]);
+    }
+  }, [selectedCountry, setValue]);
+
+  // Update Cities when state changes
+  useEffect(() => {
+    if (selectedState) {
+      const cities = City.getCitiesOfState(selectedCountry, selectedState).map(
+        (city) => ({
+          value: city.isoCode,
+          displayValue: city.name,
+        })
+      );
+      setCityData(cities);
+      setValue("ngoCity", ""); // Reset city selection
+    } else {
+      setCityData([]);
+    }
+  }, [selectedState, selectedCountry, setValue]);
+
   const handleFileUpload = async (file, type) => {
     if (file && file.length > 0) {
       // Correct check
@@ -77,7 +92,7 @@ const RegisterNGO = () => {
     return null;
   };
 
-  const onSubmit = async data => {
+  const onSubmit = async (data) => {
     try {
       setIsSubmitting(true);
 
@@ -92,7 +107,7 @@ const RegisterNGO = () => {
       formData.append("logoURL", logoUrl || "");
       formData.append("signatureURL", signatureUrl || "");
 
-      Object.keys(data).forEach(key => {
+      Object.keys(data).forEach((key) => {
         if (key !== "logoURL" && key !== "signatureURL") {
           formData.append(key, data[key]);
         }
@@ -103,14 +118,14 @@ const RegisterNGO = () => {
         Swal.fire({
           icon: "error",
           title: "Error",
-          text: "An NGO with this Email or PAN already exists."
+          text: "An NGO with this Email or PAN already exists.",
         });
         return;
       }
       Swal.fire({
         icon: "success",
         title: "Success!",
-        text: "NGO Registered Successfully!"
+        text: "NGO Registered Successfully!",
       });
       reset();
     } catch (error) {
@@ -118,7 +133,7 @@ const RegisterNGO = () => {
       Swal.fire({
         icon: "error",
         title: "Oops!",
-        text: "Error registering NGO! Please try again."
+        text: "Error registering NGO! Please try again.",
       });
     } finally {
       setIsSubmitting(false);
@@ -168,12 +183,13 @@ const RegisterNGO = () => {
           {renderInputField(
             register,
             errors,
-            "City",
-            "ngoCity",
-            validateField("ngoCity"),
-            "text",
-            "Enter City",
-            FaCity
+            "Country",
+            "ngoCountry",
+            validateField("ngoCountry"),
+            "select", // ✅ Changed from "text" to "select"
+            "Select Country",
+            FaGlobe,
+            { options: countryData } // ✅ Pass the fetched country list as dropdown options
           )}
           {renderInputField(
             register,
@@ -181,9 +197,21 @@ const RegisterNGO = () => {
             "State",
             "ngoState",
             validateField("ngoState"),
-            "text",
+            "select",
             "Enter State",
-            FaGlobe
+            FaGlobe,
+            { options: stateData }
+          )}{" "}
+          {renderInputField(
+            register,
+            errors,
+            "City",
+            "ngoCity",
+            validateField("ngoCity"),
+            "select",
+            "Enter City",
+            FaCity,
+            { options: cityData }
           )}
           {renderInputField(
             register,
@@ -194,17 +222,6 @@ const RegisterNGO = () => {
             "text",
             "Enter Pin Code",
             FaMapMarkerAlt
-          )}
-          {renderInputField(
-            register,
-            errors,
-            "Country",
-            "ngoCountry",
-            validateField("ngoCountry"),
-            "select", // ✅ Changed from "text" to "select"
-            "Select Country",
-            FaGlobe,
-            { options: countries } // ✅ Pass the fetched country list as dropdown options
           )}
           {renderInputField(
             register,
@@ -227,7 +244,7 @@ const RegisterNGO = () => {
             FaPhone,
             {},
             {
-              onKeyDown: e => {
+              onKeyDown: (e) => {
                 if (
                   !/[0-9]/.test(e.key) &&
                   e.key !== "Backspace" &&
@@ -236,9 +253,9 @@ const RegisterNGO = () => {
                   e.preventDefault(); // Blocks non-numeric characters
                 }
               },
-              onInput: e => {
+              onInput: (e) => {
                 e.target.value = e.target.value.replace(/\D/g, ""); // Removes any non-numeric characters dynamically
-              }
+              },
             }
           )}
           {renderInputField(
@@ -311,8 +328,6 @@ const RegisterNGO = () => {
             "Enter 80G Number",
             FaBriefcase
           )}
-          
-          
           {/* Add file input fields for logo and signature */}
           <div>
             <label className="block text-gray-700 font-medium mb-2">
@@ -335,8 +350,18 @@ const RegisterNGO = () => {
               {...register("signatureURL")}
               className="w-full p-2 border border-gray-300 rounded-lg"
             />
-          </div>        
-          
+          </div>
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">
+              NGO Seal (Image)
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              {...register("sealURL")}
+              className="w-full p-2 border border-gray-300 rounded-lg"
+            />
+          </div>
         </div>
 
         <div className="flex justify-center md:justify-end">
