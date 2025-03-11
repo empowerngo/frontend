@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { useState, useEffect, useCallback , useMemo} from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   Table,
   TableBody,
@@ -79,23 +79,23 @@ const DonorTable = () => {
     if (!Array.isArray(donorList)) {
       return []; // Return an empty array or handle the error appropriately
     }
-  
+
     if (!searchTerm) {
       return donorList;
     }
-  
+
     const lowerSearchTerm = searchTerm.toLowerCase();
-  
+
     return donorList.filter((donor) => {
       // Construct the full name by handling potential null or undefined values
       const firstName = (donor.donorFName || "").toLowerCase();
       const middleName = (donor.donorMName || "").toLowerCase();
       const lastName = (donor.donorLName || "").toLowerCase();
       const fullName = `${firstName} ${middleName} ${lastName}`.trim(); // Trim to remove extra spaces
-  
+
       const email = (donor.donorEmail || "").toLowerCase();
       const contact = (donor.donorMobile || "").toLowerCase();
-  
+
       return (
         fullName.includes(lowerSearchTerm) ||
         email.includes(lowerSearchTerm) ||
@@ -212,7 +212,9 @@ const DonorTable = () => {
                 filteredDonorList.map((donor, index) => (
                   <TableRow key={index}>
                     <TableCell align="center">
-                      {`${donor.donorFName} ${donor.donorMName || ""} ${donor.donorLName}`}
+                      {`${donor.donorFName} ${donor.donorMName || ""} ${
+                        donor.donorLName
+                      }`}
                     </TableCell>
                     <TableCell align="center">{donor.donorEmail}</TableCell>
                     <TableCell align="center">{donor.donorMobile}</TableCell>
@@ -226,14 +228,20 @@ const DonorTable = () => {
                           <VisibilityIcon />
                         </IconButton>
                       </Tooltip>
-                      <Tooltip title="Edit">
-                        <IconButton
-                          color="secondary"
-                          onClick={() => handleEdit(donor.donorID)}
-                        >
-                          <EditIcon />
-                        </IconButton>
-                      </Tooltip>
+                      {parsedData.ROLE_CODE === 3 || 4 ? (
+                        ""
+                      ) : (
+                        <>
+                          <Tooltip title="Edit">
+                            <IconButton
+                              color="secondary"
+                              onClick={() => handleEdit(donor.donorID)}
+                            >
+                              <EditIcon />
+                            </IconButton>
+                          </Tooltip>
+                        </>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))
@@ -250,7 +258,7 @@ const DonorTable = () => {
       )}
 
       {/* Edit Modal */}
- 
+
       <Dialog
         open={open}
         onClose={handleClose}
@@ -259,9 +267,11 @@ const DonorTable = () => {
         disableEnforceFocus
         disableAutoFocus
       >
-      
         <DialogTitle>
-          <Typography variant="body1" sx={{ fontSize: '1.25rem', fontWeight: 'bold' }}>
+          <Typography
+            variant="body1"
+            sx={{ fontSize: "1.25rem", fontWeight: "bold" }}
+          >
             Edit Donor Details
           </Typography>
         </DialogTitle>
@@ -448,7 +458,7 @@ const DonorTable = () => {
       </Dialog>
 
       {/* View Modal */}
-      
+
       <Dialog
         open={viewOpen}
         onClose={handleClose}
@@ -456,9 +466,14 @@ const DonorTable = () => {
         maxWidth="sm"
         disableEnforceFocus
         disableAutoFocus
-      >      
+      >
         <DialogTitle sx={{ textAlign: "center", fontWeight: "bold" }}>
-          <Typography variant="body1" sx={{ fontSize: '1.25rem', fontWeight: 'bold' }}>Donor Details</Typography>
+          <Typography
+            variant="body1"
+            sx={{ fontSize: "1.25rem", fontWeight: "bold" }}
+          >
+            Donor Details
+          </Typography>
         </DialogTitle>
         <DialogContent>
           {modalLoading ? (
@@ -473,24 +488,26 @@ const DonorTable = () => {
                   p: 2,
                   borderRadius: 2,
                   boxShadow: 2,
-                  backgroundColor: "#fafafa"
+                  backgroundColor: "#fafafa",
                 }}
               >
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
                     <Typography variant="subtitle1">
                       <strong>Name:</strong>{" "}
-                      {`${selectedDonor.donorFName} ${selectedDonor.donorMName || ""
-                        } ${selectedDonor.donorLName}`}
+                      {`${selectedDonor.donorFName} ${
+                        selectedDonor.donorMName || ""
+                      } ${selectedDonor.donorLName}`}
                     </Typography>
                   </Grid>
                   <Grid item xs={12}>
                     <Typography variant="subtitle1">
                       <strong>Address:</strong>{" "}
-                      {`${selectedDonor.donorAddress} ${selectedDonor.donorCity || ""
-                        } ${selectedDonor.donorState || ""
-                        } ${selectedDonor.donorCountry || ""
-                        } ${selectedDonor.donorPinCode}`}
+                      {`${selectedDonor.donorAddress} ${
+                        selectedDonor.donorCity || ""
+                      } ${selectedDonor.donorState || ""} ${
+                        selectedDonor.donorCountry || ""
+                      } ${selectedDonor.donorPinCode}`}
                     </Typography>
                   </Grid>
                   <Grid item xs={12}>
@@ -520,7 +537,8 @@ const DonorTable = () => {
                   </Grid>
                   <Grid item xs={12}>
                     <Typography variant="subtitle1">
-                      <strong>Profession:</strong> {selectedDonor.donorProfession}
+                      <strong>Profession:</strong>{" "}
+                      {selectedDonor.donorProfession}
                     </Typography>
                   </Grid>
                 </Grid>

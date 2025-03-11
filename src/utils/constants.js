@@ -46,7 +46,7 @@ export const menuItems = [
     title: "Manage Donor",
     icon: "DocumentTextIcon",
     route: "/adddonor",
-    roles: [2, 3],
+    roles: [2, 3, 4],
   },
   {
     title: "Manage Donations",

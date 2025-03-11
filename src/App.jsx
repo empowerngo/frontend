@@ -139,7 +139,9 @@ function App() {
             <Route
               path="adddonor"
               element={
-                <ProtectedRoute allowedRoles={[ROLES.NGO_ADMIN]}>
+                <ProtectedRoute
+                  allowedRoles={[ROLES.NGO_ADMIN, ROLES.NGO_STAFF]}
+                >
                   <ManageDonor />
                 </ProtectedRoute>
               }
