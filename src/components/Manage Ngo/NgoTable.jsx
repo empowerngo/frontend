@@ -22,9 +22,10 @@ import {
   InputLabel,
   CircularProgress,
   IconButton,
-  Tooltip
+  Tooltip,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
+import { uploadToCloudinary } from "../../utils/helper";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { retrieveNGOList, handleNGORequest } from "../../api/masterApi";
 // import EditNGOForm from "./EditNGOForm";
@@ -44,6 +45,11 @@ const ManageNGOTable = () => {
   const [editOpen, setEditOpen] = useState(false);
   const [viewOpen, setViewOpen] = useState(false);
   const [selectedNGO, setSelectedNGO] = useState(null);
+  const [seal, setseal] = useState("");
+  const [signature, setsignature] = useState("");
+  const [logo, setlogo] = useState("");
+  const [value, setvalue] = useState("");
+  const [uploading, setuploading] = useState(false);
 
   const fetchNGOs = async () => {
     setLoading(true);
@@ -55,7 +61,7 @@ const ManageNGOTable = () => {
         setNgoList(response.payload);
         // Build ngoMap
         const map = new Map();
-        response.payload.forEach(ngo => {
+        response.payload.forEach((ngo) => {
           map.set(ngo.ngoID, ngo);
         });
         setNGOMap(map);
@@ -70,28 +76,24 @@ const ManageNGOTable = () => {
     fetchNGOs();
   }, []);
 
-  const filteredNGOs = useMemo(
-    () => {
-      return searchTerm
-        ? ngoList.filter(ngo => {
-            const lowerSearchTerm = searchTerm.toLowerCase();
-            return (
-              (ngo.ngoName &&
-                ngo.ngoName.toLowerCase().includes(lowerSearchTerm)) ||
-              (ngo.ngoContact &&
-                ngo.ngoContact.toLowerCase().includes(lowerSearchTerm)) ||
-              (ngo.ngoRegNumber &&
-                ngo.ngoRegNumber.toLowerCase().includes(lowerSearchTerm)) ||
-              (ngo.ngoCity &&
-                ngo.ngoCity.toLowerCase().includes(lowerSearchTerm))
-            );
-          })
-        : ngoList;
-    },
-    [ngoList, searchTerm]
-  );
+  const filteredNGOs = useMemo(() => {
+    return searchTerm
+      ? ngoList.filter((ngo) => {
+          const lowerSearchTerm = searchTerm.toLowerCase();
+          return (
+            (ngo.ngoName &&
+              ngo.ngoName.toLowerCase().includes(lowerSearchTerm)) ||
+            (ngo.ngoContact &&
+              ngo.ngoContact.toLowerCase().includes(lowerSearchTerm)) ||
+            (ngo.ngoRegNumber &&
+              ngo.ngoRegNumber.toLowerCase().includes(lowerSearchTerm)) ||
+            (ngo.ngoCity && ngo.ngoCity.toLowerCase().includes(lowerSearchTerm))
+          );
+        })
+      : ngoList;
+  }, [ngoList, searchTerm]);
 
-  const handleEdit = ngoID => {
+  const handleEdit = (ngoID) => {
     const ngo = ngoMap.get(ngoID);
     if (ngo) {
       setSelectedNGO({ ...ngo });
@@ -101,7 +103,7 @@ const ManageNGOTable = () => {
     }
   };
 
-  const handleView = ngoID => {
+  const handleView = (ngoID) => {
     const ngo = ngoMap.get(ngoID);
     if (ngo) {
       setSelectedNGO({ ...ngo });
@@ -117,12 +119,29 @@ const ManageNGOTable = () => {
     setSelectedNGO(null);
   };
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setSelectedNGO(prev => ({
+    setSelectedNGO((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
+  };
+
+  const handleFileUpload = async (file, type) => {
+    console.log(file);
+    setuploading(true);
+    if (file) {
+      console.log(file.name);
+      // Correct check
+      const uploadedUrl = await uploadToCloudinary(
+        file,
+        file.name,
+        setvalue,
+        setuploading
+      );
+      return uploadedUrl;
+    }
+    return null;
   };
 
   const updateNGO = async () => {
@@ -135,15 +154,63 @@ const ManageNGOTable = () => {
       return;
     }
 
+    const {
+      authorizedPerson,
+      contactPerson,
+      ngo12ANumber,
+      ngo80GNumber,
+      ngoAddress,
+      ngoCSRNumber,
+      ngoCity,
+      ngoContact,
+      ngoCountry,
+      ngoEmail,
+      ngoFCRANumber,
+      ngoName,
+      ngoPAN,
+      ngoPinCode,
+      ngoRegNumber,
+      ngoState,
+      ngoID,
+    } = selectedNGO;
+    console.log(selectedNGO);
+    const logoURL = await handleFileUpload(logo, "logourl");
+    const signatureURL = await handleFileUpload(signature, "signatureurl");
+    const sealURL = await handleFileUpload(seal, "sealurl");
+
     delete selectedNGO.createdAt;
     delete selectedNGO.updatedAt;
-    delete selectedNGO.logoURL;
-    delete selectedNGO.signatureURL;
+    // delete selectedNGO.logoURL;
+    // delete selectedNGO.signatureURL;
+
+    const payload = {
+      reqType: "u",
+      logoURL: logoURL || "",
+      signatureURL: signatureURL || "",
+      ngoSealURL: sealURL || "",
+      authorizedPerson,
+      contactPerson,
+      ngo12ANumber,
+      ngo80GNumber,
+      ngoAddress,
+      ngoCSRNumber,
+      ngoCity,
+      ngoContact,
+      ngoCountry,
+      ngoEmail,
+      ngoFCRANumber,
+      ngoName,
+      ngoPAN,
+      ngoPinCode,
+      ngoRegNumber,
+      ngoState,
+      ngoID,
+    };
 
     try {
       setModalLoading(true);
-
-      const response = await handleNGORequest(selectedNGO, "u");
+      console.log(payload);
+      const response = await handleNGORequest(payload, "u");
       await fetchNGOs();
       handleClose();
 
@@ -166,90 +233,82 @@ const ManageNGOTable = () => {
         size="small"
         fullWidth
         value={searchTerm}
-        onChange={e => setSearchTerm(e.target.value)}
+        onChange={(e) => setSearchTerm(e.target.value)}
         className="mb-4"
       />
-      {loading
-        ? <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
-            <CircularProgress />
-          </Box>
-        : <TableContainer>
-            <Table>
-              <TableHead>
+      {loading ? (
+        <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell align="center">
+                  <b>NGO Name</b>
+                </TableCell>
+                <TableCell align="center">
+                  <b>Registration Number</b>
+                </TableCell>
+                <TableCell align="center">
+                  <b>City</b>
+                </TableCell>
+                <TableCell align="center">
+                  <b>State</b>
+                </TableCell>
+                <TableCell align="center">
+                  <b>Email</b>
+                </TableCell>
+                <TableCell align="center">
+                  <b>Contact</b>
+                </TableCell>
+                <TableCell align="center">
+                  <b>Actions</b>
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredNGOs.length > 0 ? (
+                filteredNGOs.map((ngo, index) => (
+                  <TableRow key={index}>
+                    <TableCell align="center">{ngo.ngoName}</TableCell>
+                    <TableCell align="center">{ngo.ngoRegNumber}</TableCell>
+                    <TableCell align="center">{ngo.ngoCity}</TableCell>
+                    <TableCell align="center">{ngo.ngoState}</TableCell>
+                    <TableCell align="center">{ngo.ngoEmail}</TableCell>
+                    <TableCell align="center">{ngo.ngoContact}</TableCell>
+                    <TableCell align="center">
+                      <Tooltip title="View">
+                        <IconButton
+                          color="primary"
+                          onClick={() => handleView(ngo.ngoID)}
+                        >
+                          <VisibilityIcon />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Edit">
+                        <IconButton
+                          color="secondary"
+                          onClick={() => handleEdit(ngo.ngoID)}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
                 <TableRow>
-                  <TableCell align="center">
-                    <b>NGO Name</b>
-                  </TableCell>
-                  <TableCell align="center">
-                    <b>Registration Number</b>
-                  </TableCell>
-                  <TableCell align="center">
-                    <b>City</b>
-                  </TableCell>
-                  <TableCell align="center">
-                    <b>State</b>
-                  </TableCell>
-                  <TableCell align="center">
-                    <b>Email</b>
-                  </TableCell>
-                  <TableCell align="center">
-                    <b>Contact</b>
-                  </TableCell>
-                  <TableCell align="center">
-                    <b>Actions</b>
+                  <TableCell colSpan={5} align="center">
+                    No NGOs Found
                   </TableCell>
                 </TableRow>
-              </TableHead>
-              <TableBody>
-                {filteredNGOs.length > 0
-                  ? filteredNGOs.map((ngo, index) =>
-                      <TableRow key={index}>
-                        <TableCell align="center">
-                          {ngo.ngoName}
-                        </TableCell>
-                        <TableCell align="center">
-                          {ngo.ngoRegNumber}
-                        </TableCell>
-                        <TableCell align="center">
-                          {ngo.ngoCity}
-                        </TableCell>
-                        <TableCell align="center">
-                          {ngo.ngoState}
-                        </TableCell>
-                        <TableCell align="center">
-                          {ngo.ngoEmail}
-                        </TableCell>
-                        <TableCell align="center">
-                          {ngo.ngoContact}
-                        </TableCell>
-                        <TableCell align="center">
-                          <Tooltip title="View">
-                            <IconButton
-                              color="primary"
-                              onClick={() => handleView(ngo.ngoID)}
-                            >
-                              <VisibilityIcon />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip title="Edit">
-                            <IconButton
-                              color="secondary"
-                              onClick={() => handleEdit(ngo.ngoID)}
-                            >
-                              <EditIcon />
-                            </IconButton>
-                          </Tooltip>
-                        </TableCell>
-                      </TableRow>
-                    )
-                  : <TableRow>
-                      <TableCell colSpan={5} align="center">
-                        No NGOs Found
-                      </TableCell>
-                    </TableRow>}
-              </TableBody>
-            </Table>
-          </TableContainer>}
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
 
       {/* View Modal */}
 
@@ -270,18 +329,19 @@ const ManageNGOTable = () => {
           </Typography>
         </DialogTitle>
         <DialogContent>
-          {modalLoading
-            ? <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
-                <CircularProgress />
-              </Box>
-            : selectedNGO &&
+          {modalLoading ? (
+            <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            selectedNGO && (
               <Box
                 sx={{
                   mt: 2,
                   p: 2,
                   borderRadius: 2,
                   boxShadow: 2,
-                  backgroundColor: "#fafafa"
+                  backgroundColor: "#fafafa",
                 }}
               >
                 <Grid container spacing={2}>
@@ -293,10 +353,11 @@ const ManageNGOTable = () => {
                   <Grid item xs={12}>
                     <Typography variant="subtitle1">
                       <strong>Address:</strong>{" "}
-                      {`${selectedNGO.ngoAddress} ${selectedNGO.ngoCity ||
-                        ""} ${selectedNGO.ngoState ||
-                        ""} ${selectedNGO.ngoCountry ||
-                        ""} ${selectedNGO.ngoPinCode}`}
+                      {`${selectedNGO.ngoAddress} ${
+                        selectedNGO.ngoCity || ""
+                      } ${selectedNGO.ngoState || ""} ${
+                        selectedNGO.ngoCountry || ""
+                      } ${selectedNGO.ngoPinCode}`}
                     </Typography>
                   </Grid>
                   <Grid item xs={12}>
@@ -347,7 +408,9 @@ const ManageNGOTable = () => {
                     </Typography>
                   </Grid>
                 </Grid>
-              </Box>}
+              </Box>
+            )
+          )}
         </DialogContent>
         <DialogActions sx={{ justifyContent: "center", p: 2 }}>
           <Button onClick={handleClose} variant="contained" color="primary">
@@ -375,7 +438,7 @@ const ManageNGOTable = () => {
           </Typography>
         </DialogTitle>
         <DialogContent>
-          {selectedNGO &&
+          {selectedNGO && (
             <Box component="form" noValidate sx={{ mt: 2 }}>
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
@@ -559,12 +622,56 @@ const ManageNGOTable = () => {
                     variant="outlined"
                   />
                 </Grid>
+                <Grid item xs={12} sm={6}>
+                  <div>
+                    <label className="block text-gray-700 font-medium mb-2">
+                      NGO Logo (Image)
+                    </label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="w-full p-2 border border-gray-300 rounded-lg"
+                      name="ngoLogo"
+                      onChange={(e) => setlogo(e.target.files[0])}
+                    />
+                  </div>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <div>
+                    <label className="block text-gray-700 font-medium mb-2">
+                      NGO Signature (Image)
+                    </label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="w-full p-2 border border-gray-300 rounded-lg"
+                      name="ngoSignature"
+                      onChange={(e) => setsignature(e.target.files[0])}
+                    />
+                  </div>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <div>
+                    <label className="block text-gray-700 font-medium mb-2">
+                      NGO Seal (Image)
+                    </label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="w-full p-2 border border-gray-300 rounded-lg"
+                      name="ngoSeal"
+                      onChange={(e) => setseal(e.target.files[0])}
+                    />
+                  </div>
+                </Grid>
               </Grid>
-              {modalLoading &&
+              {modalLoading && (
                 <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
                   <CircularProgress size={24} />
-                </Box>}
-            </Box>}
+                </Box>
+              )}
+            </Box>
+          )}
         </DialogContent>
         <DialogActions sx={{ p: 2 }}>
           <Button onClick={handleClose} variant="outlined">

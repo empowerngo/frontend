@@ -34,8 +34,9 @@ const RegisterNGO = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const selectedCountry = watch("ngoCountry");
   const selectedState = watch("ngoState");
-  const selectedLogo = watch("logoURL");
-  const selectedSignature = watch("signatureURL");
+  const selectedLogo = watch("logourl");
+  const selectedSignature = watch("signatureurl");
+  const selectedSeal = watch("sealurl");
   // State variables for dynamic dropdowns
   const [stateData, setStateData] = useState([]);
   const [cityData, setCityData] = useState([]);
@@ -87,6 +88,7 @@ const RegisterNGO = () => {
         setValue,
         setUploading
       );
+      console.log(uploadedUrl);
       return uploadedUrl;
     }
     return null;
@@ -95,25 +97,56 @@ const RegisterNGO = () => {
   const onSubmit = async (data) => {
     try {
       setIsSubmitting(true);
+      const {
+        authorizedPerson,
+        contactPerson,
+        ngo12ANumber,
+        ngo80GNumber,
+        ngoAddress,
+        ngoCSRNumber,
+        ngoCity,
+        ngoContact,
+        ngoCountry,
+        ngoEmail,
+        ngoFCRANumber,
+        ngoName,
+        ngoPAN,
+        ngoPinCode,
+        ngoRegNumber,
+        ngoState,
+      } = data;
 
-      const logoUrl = await handleFileUpload(selectedLogo, "logoURL");
-      const signatureUrl = await handleFileUpload(
+      const logoURL = await handleFileUpload(selectedLogo, "logourl");
+      const signatureURL = await handleFileUpload(
         selectedSignature,
-        "signatureURL"
+        "signatureurl"
       );
+      const sealURL = await handleFileUpload(selectedSeal, "sealurl");
 
-      const formData = new FormData();
-      formData.append("reqType", "s");
-      formData.append("logoURL", logoUrl || "");
-      formData.append("signatureURL", signatureUrl || "");
+      const payload = {
+        reqType: "s",
+        logoURL: logoURL || "",
+        signatureURL: signatureURL || "",
+        ngoSealURL: sealURL || "",
+        authorizedPerson,
+        contactPerson,
+        ngo12ANumber,
+        ngo80GNumber,
+        ngoAddress,
+        ngoCSRNumber,
+        ngoCity,
+        ngoContact,
+        ngoCountry,
+        ngoEmail,
+        ngoFCRANumber,
+        ngoName,
+        ngoPAN,
+        ngoPinCode,
+        ngoRegNumber,
+        ngoState,
+      };
 
-      Object.keys(data).forEach((key) => {
-        if (key !== "logoURL" && key !== "signatureURL") {
-          formData.append(key, data[key]);
-        }
-      });
-
-      const response = await handleNGORequest(formData, "s");
+      const response = await handleNGORequest(payload, "s");
       if (response.statusCode === 409) {
         Swal.fire({
           icon: "error",
@@ -218,7 +251,7 @@ const RegisterNGO = () => {
             errors,
             "Pin Code",
             "ngoPinCode",
-            validateField("ngoPinCode"),
+            // validateField("ngoPinCode"),
             "text",
             "Enter Pin Code",
             FaMapMarkerAlt
@@ -238,25 +271,25 @@ const RegisterNGO = () => {
             errors,
             "Contact",
             "ngoContact",
-            validateField("ngoContact"),
+            // validateField("ngoContact"),
             "tel", // Use "tel" for better mobile support
             "Enter Contact",
-            FaPhone,
-            {},
-            {
-              onKeyDown: (e) => {
-                if (
-                  !/[0-9]/.test(e.key) &&
-                  e.key !== "Backspace" &&
-                  e.key !== "Tab"
-                ) {
-                  e.preventDefault(); // Blocks non-numeric characters
-                }
-              },
-              onInput: (e) => {
-                e.target.value = e.target.value.replace(/\D/g, ""); // Removes any non-numeric characters dynamically
-              },
-            }
+            FaPhone
+            // {},
+            // {
+            //   onKeyDown: (e) => {
+            //     if (
+            //       !/[0-9]/.test(e.key) &&
+            //       e.key !== "Backspace" &&
+            //       e.key !== "Tab"
+            //     ) {
+            //       e.preventDefault(); // Blocks non-numeric characters
+            //     }
+            //   },
+            //   onInput: (e) => {
+            //     e.target.value = e.target.value.replace(/\D/g, ""); // Removes any non-numeric characters dynamically
+            //   },
+            // }
           )}
           {renderInputField(
             register,
@@ -273,7 +306,7 @@ const RegisterNGO = () => {
             errors,
             "PAN Number",
             "ngoPAN",
-            validateField("ngoPAN"),
+            // validateField("ngoPAN"),
             "text",
             "Enter PAN Number",
             FaIdCard
@@ -336,7 +369,7 @@ const RegisterNGO = () => {
             <input
               type="file"
               accept="image/*"
-              {...register("logoURL")}
+              {...register("logourl")}
               className="w-full p-2 border border-gray-300 rounded-lg"
             />
           </div>
@@ -347,7 +380,7 @@ const RegisterNGO = () => {
             <input
               type="file"
               accept="image/*"
-              {...register("signatureURL")}
+              {...register("signatureurl")}
               className="w-full p-2 border border-gray-300 rounded-lg"
             />
           </div>
@@ -358,7 +391,7 @@ const RegisterNGO = () => {
             <input
               type="file"
               accept="image/*"
-              {...register("sealURL")}
+              {...register("sealurl")}
               className="w-full p-2 border border-gray-300 rounded-lg"
             />
           </div>
