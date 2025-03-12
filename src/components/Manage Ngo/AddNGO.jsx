@@ -37,6 +37,8 @@ const RegisterNGO = () => {
   const selectedLogo = watch("logourl");
   const selectedSignature = watch("signatureurl");
   const selectedSeal = watch("sealurl");
+  const [subscriptionData, setSubscriptionData] = useState([]);
+
   // State variables for dynamic dropdowns
   const [stateData, setStateData] = useState([]);
   const [cityData, setCityData] = useState([]);
@@ -45,6 +47,16 @@ const RegisterNGO = () => {
     value: country.isoCode,
     displayValue: country.name,
   }));
+
+  useEffect(() => {
+    const planData = localStorage.getItem("plans");
+    let parsedData = JSON.parse(planData).map((plan) => ({
+      value: String(plan.planID),
+      displayValue: plan.planName,
+    }));
+    console.log(parsedData);
+    setSubscriptionData(parsedData);
+  }, []);
 
   // Update States when country changes
   useEffect(() => {
@@ -67,10 +79,11 @@ const RegisterNGO = () => {
     if (selectedState) {
       const cities = City.getCitiesOfState(selectedCountry, selectedState).map(
         (city) => ({
-          value: city.isoCode,
+          value: city.stateCode,
           displayValue: city.name,
         })
       );
+      console.log(cities);
       setCityData(cities);
       setValue("ngoCity", ""); // Reset city selection
     } else {
@@ -105,6 +118,7 @@ const RegisterNGO = () => {
         ngoAddress,
         ngoCSRNumber,
         ngoCity,
+        subscriptionp,
         ngoContact,
         ngoCountry,
         ngoEmail,
@@ -128,13 +142,14 @@ const RegisterNGO = () => {
         logoURL: logoURL || "",
         signatureURL: signatureURL || "",
         ngoSealURL: sealURL || "",
+        planID: subscriptionp,
+        ngoCity,
         authorizedPerson,
         contactPerson,
         ngo12ANumber,
         ngo80GNumber,
         ngoAddress,
         ngoCSRNumber,
-        ngoCity,
         ngoContact,
         ngoCountry,
         ngoEmail,
@@ -245,6 +260,17 @@ const RegisterNGO = () => {
             "Enter City",
             FaCity,
             { options: cityData }
+          )}
+          {renderInputField(
+            register,
+            errors,
+            "Subscription",
+            "subscriptionp",
+            validateField("ngoCity"),
+            "select",
+            "Select Subscription Plan",
+            FaCity,
+            { options: subscriptionData }
           )}
           {renderInputField(
             register,

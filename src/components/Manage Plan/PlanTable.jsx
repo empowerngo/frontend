@@ -28,6 +28,8 @@ const PlanTable = () => {
       try {
         const response = await getSubsPlans();
         console.log(response);
+        localStorage.setItem("plans", JSON.stringify(response.payload));
+
         setPlanList(response?.payload || []);
       } catch (err) {
         console.error("Failed to fetch User data", err);

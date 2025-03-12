@@ -441,7 +441,7 @@ const ManageNGOTable = () => {
                   >
                     <Typography variant="subtitle1">Seal</Typography>
                     <img
-                      src={selectedNGO?.logoURL}
+                      src={selectedNGO?.ngoSealURL}
                       alt="NGO Logo"
                       style={{
                         width: "100%",
