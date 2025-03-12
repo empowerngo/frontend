@@ -105,6 +105,7 @@ const ManageNGOTable = () => {
 
   const handleView = (ngoID) => {
     const ngo = ngoMap.get(ngoID);
+    console.log(ngo);
     if (ngo) {
       setSelectedNGO({ ...ngo });
       setViewOpen(true);
@@ -406,6 +407,69 @@ const ManageNGOTable = () => {
                       <strong>Contact Person:</strong>{" "}
                       {selectedNGO.contactPerson}
                     </Typography>
+                  </Grid>
+                  <Grid
+                    item
+                    xs={4}
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "flex-start",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Typography variant="subtitle1">Logo</Typography>
+                    <img
+                      src={selectedNGO?.logoURL}
+                      alt="NGO Logo"
+                      style={{
+                        width: "100%",
+                        height: 150,
+                        objectFit: "contain",
+                      }}
+                    />
+                  </Grid>
+                  <Grid
+                    item
+                    xs={4}
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "flex-start",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Typography variant="subtitle1">Seal</Typography>
+                    <img
+                      src={selectedNGO?.logoURL}
+                      alt="NGO Logo"
+                      style={{
+                        width: "100%",
+                        height: 150,
+                        objectFit: "contain",
+                      }}
+                    />
+                  </Grid>
+                  <Grid
+                    item
+                    xs={4}
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "flex-start",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Typography variant="subtitle1">Signature</Typography>
+                    <img
+                      src={selectedNGO?.signatureURL}
+                      alt="NGO Logo"
+                      style={{
+                        width: "100%",
+                        height: 150,
+                        objectFit: "contain",
+                      }}
+                    />
                   </Grid>
                 </Grid>
               </Box>
