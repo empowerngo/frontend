@@ -91,12 +91,12 @@ export const getProjects = async (ngoID) => {
   }
 };
 
-export const getPurposes = async (ngoID, projectID) => {
+export const getPurposes = async (ngoID) => {
   try {
     const response = await api.post("/managePurpose", {
       reqType: "g",
       ngoID,
-      projectID,
+      
     });
     return response.data.payload || [];
   } catch (error) {
