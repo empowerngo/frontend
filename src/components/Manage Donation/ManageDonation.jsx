@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState,  useRef } from "react";
 import UploadBankStatement from "./UploadBankStatement";
 import PaymentDetails from "./PaymentDetails";
 import DonationTable from "./DonationTable";
@@ -23,6 +23,21 @@ const ManageDonation = () => {
   const userData = localStorage.getItem("user");
   let parsedData = JSON.parse(userData);
 
+
+  const donationTableRef = useRef(null);
+  const uploadBankRef = useRef(null);
+
+  const handleOnSubmit = () => {
+    if (donationTableRef.current) {
+      donationTableRef.current.clickButton();
+      console.log("Donation Table Refresh Clicked")
+    }
+    if (uploadBankRef.current) {
+      uploadBankRef.current.clickButton();
+      console.log("Upload Bank Stats Refresh Clicked")
+    }
+  };
+
   return (
     <div className="p-6 h-full w-full">
       {parsedData.ROLE_CODE === 4 ? (
@@ -35,6 +50,7 @@ const ManageDonation = () => {
             setisSearchDisable={setisSearchDisable}
             setSelectedDonationTable={setSelectedDonationTable}
             setShowForm={setShowForm}
+            ref={uploadBankRef} 
           />
           <PaymentDetails
             selectedTransaction={selectedTransaction}
@@ -45,6 +61,7 @@ const ManageDonation = () => {
             setFormData={setFormData}
             showForm={showForm}
             setShowForm={setShowForm}
+            onSubmit={handleOnSubmit}
           />
         </>
       )}
@@ -54,6 +71,7 @@ const ManageDonation = () => {
         selectedTransaction={selectedTransaction}
         setFormData={setFormData}
         setShowForm={setShowForm}
+        ref={donationTableRef}
       />
     </div>
   );

@@ -12,6 +12,7 @@ const PaymentDetails = ({
   setFormData,
   showForm,
   setShowForm,
+  onSubmit,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
@@ -251,6 +252,9 @@ const PaymentDetails = ({
     handleDonationRequest(data, reqType)
       .then((response) => {
         console.log("Success:", response);
+        if (onSubmit) {
+          onSubmit();
+        }
         resetForm();
       })
       .catch((error) => console.error("Error:", error));

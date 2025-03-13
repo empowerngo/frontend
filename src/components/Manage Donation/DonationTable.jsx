@@ -10,7 +10,7 @@ import {
   Alert,
 } from "@mui/material";
 import { Edit, Delete, Visibility, Send, Download } from "@mui/icons-material";
-import { useEffect, useState } from "react";
+import { useEffect, useState, forwardRef, useImperativeHandle, useRef } from "react";
 import { retrieveDonations, sendEmail } from "../../api/masterApi";
 import DonationReceipt from "./Recipt";
 import { renderToString } from "react-dom/server";
@@ -19,12 +19,17 @@ import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import html2pdf from "html2pdf.js";
 
-const DonationTable = ({
-  setFormData,
-  setShowForm,
-  setSelectedDonationTable,
-  selectedTransaction,
-}) => {
+// const DonationTable = ({
+//   setFormData,
+//   setShowForm,
+//   setSelectedDonationTable,
+//   selectedTransaction,
+  
+// }) => {
+  const DonationTable = forwardRef((props, ref) => {
+    
+    const buttonRef = useRef(null);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [donations, setdonations] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -68,6 +73,14 @@ const DonationTable = ({
   useEffect(() => {
     getDonationfromServer();
   }, []);
+
+  useImperativeHandle(ref, () => ({
+    clickButton: () => {
+      if (buttonRef.current) {
+        buttonRef.current.click();
+      }
+    },
+  }));
 
   const debouncedSearch = debounce((term) => {
     const filtered = donors.filter(
@@ -127,7 +140,7 @@ const DonationTable = ({
   };
 
   const EditRow = (donation, i) => {
-    if (selectedTransaction) {
+    if (props.selectedTransaction) {
       // Prevent editing if a transaction is already selected (import in progress)
       alert(
         "Edit Not Allowed", // Title of the alert
@@ -148,7 +161,7 @@ const DonationTable = ({
       note,
       transactionID,
     } = donation;
-    setFormData({
+    props.setFormData({
       amount,
       bank,
       type,
@@ -159,8 +172,8 @@ const DonationTable = ({
       transactionID: transactionID === null ? "" : transactionID,
     });
     console.log(amount, bank, type, purpose, project, donationDate, note);
-    setSelectedDonationTable(donation);
-    setShowForm(true);
+    props.setSelectedDonationTable(donation);
+    props.setShowForm(true);
   };
 
   const GeneratePdf = (element, donation) => {
@@ -455,6 +468,7 @@ const DonationTable = ({
 
         {/* Next Button */}
         <button
+         ref={buttonRef} 
           onClick={() => getDonationfromServer()}
           className="px-4 py-2 bg-blue-700 text-white hover:bg-blue-800 rounded-lg disabled:bg-gray-100 disabled:text-gray-400 transition"
           aria-label="Next Page"
@@ -607,6 +621,6 @@ const DonationTable = ({
       </div>
     </div>
   );
-};
+});
 
 export default DonationTable;

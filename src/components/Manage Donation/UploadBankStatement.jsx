@@ -1,14 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState,forwardRef, useImperativeHandle, useRef } from "react";
 import Papa from "papaparse";
 import { importFile, getStatement } from "../../api/masterApi";
 
-const UploadBankStatement = ({
-  onSelectTransaction,
-  selectedTransaction,
-  setSelectedDonationTable,
-  setisSearchDisable,
-  setShowForm,
-}) => {
+// const UploadBankStatement = ({
+//   onSelectTransaction,
+//   selectedTransaction,
+//   setSelectedDonationTable,
+//   setisSearchDisable,
+//   setShowForm,
+// }) => {
+  const UploadBankStatement = forwardRef((props, ref) => {
+
+    const buttonRef = useRef(null);
   const [file, setFile] = useState(null);
   const [donationType, setDonationType] = useState("");
   const [hideContainer, sethideContainer] = useState(true);
@@ -23,6 +26,14 @@ const UploadBankStatement = ({
     console.log(statement);
     return statement;
   };
+
+  useImperativeHandle(ref, () => ({
+    clickButton: () => {
+      if (buttonRef.current) {
+        buttonRef.current.click();
+      }
+    },
+  }));
 
   useEffect(() => {
     getStatementfromServer();
@@ -77,8 +88,8 @@ const UploadBankStatement = ({
 
   const handleAdd = async (item) => {
     console.log(item);
-    if (selectedTransaction) {
-      onSelectTransaction(null);
+    if (props.selectedTransaction) {
+      props.onSelectTransaction(null);
       return;
     }
     const data = {
@@ -88,10 +99,10 @@ const UploadBankStatement = ({
       amount: item.amount,
       statementID: item.statementID,
     };
-    setSelectedDonationTable(null);
-    setisSearchDisable(false);
-    setShowForm(true);
-    onSelectTransaction(data);
+    props.setSelectedDonationTable(null);
+    props.setisSearchDisable(false);
+    props.setShowForm(true);
+    props.onSelectTransaction(data);
     console.log(data);
   };
 
@@ -118,6 +129,7 @@ const UploadBankStatement = ({
         <div className="flex gap-2">
           {!hideContainer && (
             <button
+            ref={buttonRef} 
               onClick={() => getStatementfromServer()}
               className="px-4 py-2 bg-blue-700 text-white hover:bg-blue-800 rounded-lg disabled:bg-gray-100 disabled:text-gray-400 transition"
               aria-label="Next Page"
@@ -211,7 +223,7 @@ const UploadBankStatement = ({
                         {row.donationType}
                       </td>
                       <td className="border border-gray-300 px-4 py-2">
-                        {selectedTransaction && index === 0 ? (
+                        {props.selectedTransaction && index === 0 ? (
                           <button
                             onClick={() => handleAdd(row)}
                             disabled={index !== 0}
@@ -275,6 +287,6 @@ const UploadBankStatement = ({
       )}
     </div>
   );
-};
+});
 
 export default UploadBankStatement;
