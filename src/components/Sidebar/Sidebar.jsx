@@ -82,13 +82,7 @@ const Sidebar = ({ setIsAuthenticated }) => {
           isOpen ? "w-72" : "-translate-x-full"
         } md:translate-x-0`}
       >
-        <div className="p-5 bg-blue-800 flex flex-col items-center border-b border-blue-700">
-          <img src={Logo} alt="EmpowerNGO Logo" className="h-16 mb-2" />
-          {/* </div>
-        <div className="p-5 bg-blue-800 flex flex-col items-center border-b border-blue-700"> */}
-          <h1 className="text-2xl font-bold">EmpowerNGO</h1>
-          <p className="text-sm text-blue-200">Empowering Non-profits</p>
-        </div>
+       
 
         <div className="p-5 flex items-center space-x-4 border-b border-blue-700">
           <div
