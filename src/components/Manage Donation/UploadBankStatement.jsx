@@ -1,23 +1,21 @@
-import { useEffect, useState,forwardRef, useImperativeHandle, useRef } from "react";
+import {
+  useEffect,
+  useState,
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+} from "react";
 import Papa from "papaparse";
 import { importFile, getStatement } from "../../api/masterApi";
 
-// const UploadBankStatement = ({
-//   onSelectTransaction,
-//   selectedTransaction,
-//   setSelectedDonationTable,
-//   setisSearchDisable,
-//   setShowForm,
-// }) => {
-  const UploadBankStatement = forwardRef((props, ref) => {
-
-    const buttonRef = useRef(null);
+const UploadBankStatement = forwardRef((props, ref) => {
+  const buttonRef = useRef(null);
   const [file, setFile] = useState(null);
   const [donationType, setDonationType] = useState("");
   const [hideContainer, sethideContainer] = useState(true);
   const [csvData, setCsvData] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1); // State for current page
-  const rowsPerPage = 5; // Number of rows to display per page
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 5;
   const userData = localStorage.getItem("user");
 
   const getStatementfromServer = async () => {
@@ -129,7 +127,7 @@ import { importFile, getStatement } from "../../api/masterApi";
         <div className="flex gap-2">
           {!hideContainer && (
             <button
-            ref={buttonRef} 
+              ref={buttonRef}
               onClick={() => getStatementfromServer()}
               className="px-4 py-2 bg-blue-700 text-white hover:bg-blue-800 rounded-lg disabled:bg-gray-100 disabled:text-gray-400 transition"
               aria-label="Next Page"

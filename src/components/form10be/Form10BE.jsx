@@ -42,7 +42,7 @@ const Form10BE = () => {
       startDate,
       endDate,
       ngo80GNumber: parsedUser.NGO_80G_NUMBER,
-      reg80GDate: parsedUser.NGO_80G_NUMBER,
+      reg80GDate: parsedUser.REG80G_DATE,
     };
 
     const { error } = schema.validate(requestData);
@@ -51,15 +51,33 @@ const Form10BE = () => {
       return;
     }
 
-    console.log(requestData);
+    console.log("Sending request:", requestData);
 
     try {
       const response = await handleForm10BERequest(requestData);
-      if (!response.ok) throw new Error("Failed to download");
-      const result = await response.json();
-      console.log("Report Generated:", result);
-    } catch (err) {
-      console.error("Error generating report:", err);
+      console.log(response);
+
+      // Decode Base64 string to text
+      const csvText = atob(response); // `atob` decodes base64 to text
+
+      // Convert text to a Blob (properly handles CSV format)
+      const blob = new Blob([csvText], { type: "text/csv" });
+
+      // Create a download link
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "report.csv";
+      document.body.appendChild(link);
+      link.click();
+
+      // Cleanup
+      URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+
+      console.log("Report downloaded successfully!");
+    } catch (error) {
+      console.error("Error downloading report:", error);
     }
   };
 
