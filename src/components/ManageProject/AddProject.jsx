@@ -54,7 +54,9 @@ const AddProjectAndPurposeForm = ({
       const formData = new FormData();
       formData.append("ngoID", ngoID);
       formData.append("createdBy", createdBy);
-      formData.append("reqType", editItem ? "u" : "s"); 
+      // const reqTypeValue = editItem ? "u" : "s"; // Store the value
+      // formData.append("reqType", reqTypeValue);
+      // console.log("reqType Value - ", reqTypeValue); // Log the variable
 
       if (isProject) {
         formData.append("projectName", data.projectName);
@@ -70,9 +72,9 @@ const AddProjectAndPurposeForm = ({
       }
 
       if (isProject) {
-        await manageProject(formData);
+        await manageProject(formData, "s");
       } else {
-        await managePurpose(formData); 
+        await managePurpose(formData, "s"); 
       }
 
       Swal.fire({
