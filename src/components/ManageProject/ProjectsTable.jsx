@@ -1,4 +1,5 @@
-import { useState, useMemo } from "react";
+/* eslint-disable no-unused-vars */
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   Table,
   TableBody,
@@ -6,186 +7,268 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TablePagination,
   Paper,
   TextField,
   Button,
   Dialog,
-  DialogTitle,
-  DialogContent,
   DialogActions,
+  DialogContent,
+  DialogTitle,
+  Grid,
   Typography,
   Box,
+  CircularProgress,
   IconButton,
   Tooltip,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import Swal from "sweetalert2";
+import { getPurposes, managePurpose } from "../../api/masterApi";
 
-const ProjectAndPurposeTable = ({ 
-  items = [], 
-  handleDelete, 
-  fetchData, 
-  isProject 
-}) => {
+const ProjectsTable = () => {
+  const [projectList, setProjectList] = useState([]);
+  const [projectMap, setProjectMap] = useState(new Map()); // Efficient lookup
   const [searchTerm, setSearchTerm] = useState("");
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [editItem, setEditItem] = useState(null);
-  const [editOpen, setEditOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [modalLoading, setModalLoading] = useState(false);
 
-  const filteredItems = useMemo(() => {
-    return items.filter((item) => {
-      const name = isProject ? item?.projectName || item?.PROJECT_NAME : item?.purposeName;
-      return name?.toLowerCase().includes(searchTerm.toLowerCase());
+  const userData = localStorage.getItem("user");
+  let parsedData;
+
+  try {
+    parsedData = JSON.parse(userData);
+  } catch (error) {
+    Swal.fire("Error", "Failed to parse user data.", "error");
+    return;
+  }
+
+  const fetchProjectPurpose = async () => {
+    setLoading(true);
+    let ngoID = parsedData.NGO_ID;
+    try {
+      const response = await getPurposes(ngoID);
+
+  
+      if (Array.isArray(response)) {
+        setProjectList(response);
+      
+  
+        const map = new Map();
+        response.forEach((project) => {
+          map.set(project.PROJECT_ID, project);
+        });
+        setProjectMap(map);
+      } else {
+        console.error("Unexpected response format", response);
+      }
+    } catch (error) {
+      console.error("Error fetching projects", error);
+    }
+    setLoading(false);
+  };
+  
+
+  useEffect(() => {
+    fetchProjectPurpose();
+    
+  }, []);
+
+  const filteredProjectList = useMemo(() => {
+    if (!Array.isArray(projectList)) {
+      return [];
+    }
+
+    if (!searchTerm) {
+      return projectList;
+    }
+
+    const lowerSearchTerm = searchTerm.toLowerCase();
+
+    return projectList.filter((project) => {
+      const projectName = (project.PROJECT_NAME || "").toLowerCase();
+      return projectName.includes(lowerSearchTerm);
     });
-  }, [items, searchTerm, isProject]);
+  }, [projectList, searchTerm]);
+ 
 
-  const handleEdit = (item) => {
-    setEditItem(item);
-    setEditOpen(true);
+  
+
+  const handleEdit = (projectID) => {
+    const project = projectMap.get(projectID);
+    if (project) {
+      setSelectedProject({ ...project });
+      setOpen(true);
+    } else {
+      Swal.fire("Error", "Project not found.", "error");
+    }
   };
 
-  const handleCloseEdit = () => {
-    setEditOpen(false);
-    setEditItem(null);
+  const handleClose = () => {
+    setOpen(false);
+    setSelectedProject(null);
   };
 
-  const handleSaveEdit = async () => {
-    await fetchData();
-    handleCloseEdit();
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setSelectedProject((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const updateProject = async () => {
+    if (!selectedProject || !selectedProject.PROJECT_ID) {
+      Swal.fire("Error", "Project ID is required for updating details.", "error");
+      return;
+    }
+
+    if (!userData) {
+      Swal.fire("Error", "No user data found in localStorage.", "error");
+      return;
+    }
+
+    const updatedProject = {
+      ...selectedProject,
+      ngoID: parsedData.NGO_ID,
+    };
+
+    try {
+      setModalLoading(true);
+      const response = await managePurpose(updatedProject, "u");
+      await fetchProjectPurpose();
+      handleClose();
+      Swal.fire("Success", "Project details updated successfully!", "success");
+    } catch (error) {
+      Swal.fire("Error", "Failed to update project details.", "error");
+    }
+    setModalLoading(false);
   };
 
   return (
-    <Paper sx={{ mt: 6, p: 4, borderRadius: 2, boxShadow: 3 }}>
-      <Typography variant="h5" align="center" gutterBottom>
-        {isProject ? "Project List" : "Purpose List"}
+    <Paper className="mt-6 p-6">
+      <Typography variant="h4" align="center" gutterBottom>
+        Project List
       </Typography>
+      <TextField
+        label="Search Project..."
+        variant="outlined"
+        size="small"
+        fullWidth
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="mb-4"
+      />
 
-      <Box display="flex" gap={2} mb={2}>
-        <TextField
-          label={isProject ? "Search Project..." : "Search Purpose..."}
-          variant="outlined"
-          size="small"
-          fullWidth
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={() => setSearchTerm("")}
-          disabled={!searchTerm}
-        >
-          Clear
-        </Button>
-      </Box>
-
-      <TableContainer>
-        <Table>
-          <TableHead>
-            <TableRow sx={{ backgroundColor: "#f4f4f4" }}>
-              {isProject ? (
-                <>
-                  <TableCell align="center">Project Name</TableCell>
-                  <TableCell align="center">Actions</TableCell>
-                </>
-              ) : (
-                <>
-                  <TableCell align="center">Project Name</TableCell>
-                  <TableCell align="center">Purpose Name</TableCell>
-                  <TableCell align="center">Actions</TableCell>
-                </>
-              )}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredItems.length === 0 ? (
+      {loading ? (
+        <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <TableContainer>
+          <Table>
+            <TableHead>
               <TableRow>
-                <TableCell colSpan={isProject ? 2 : 3} align="center">
-                  No {isProject ? "projects" : "purposes"} found.
-                </TableCell>
+                <TableCell align="center">Project Name</TableCell>
+                <TableCell align="center">Purpose Name</TableCell>
+                <TableCell align="center">Action</TableCell>
               </TableRow>
-            ) : (
-              filteredItems
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((item, index) => (
-                  <TableRow key={index} hover>
-                    {isProject ? (
-                      <TableCell align="center">{item?.projectName || item?.PROJECT_NAME}</TableCell>
-                    ) : (
-                      <>
-                        <TableCell align="center">{item?.projectName || "N/A"}</TableCell>
-                        <TableCell align="center">{item?.purposeName}</TableCell>
-                      </>
-                    )}
+            </TableHead>
+            <TableBody>
+              {filteredProjectList.length > 0 ? (
+                filteredProjectList.map((project, index) => (
+                  <TableRow key={index}>
+                    <TableCell align="center">{project.PROJECT_NAME}</TableCell>
+                    <TableCell align="center">{project.PURPOSE_NAME}</TableCell>
                     <TableCell align="center">
                       <Tooltip title="Edit">
                         <IconButton
-                          color="primary"
-                          onClick={() => handleEdit(item)}
+                          color="secondary"
+                          onClick={() => handleEdit(project.PURPOSE_ID)}
                         >
-                          <EditIcon fontSize="small" />
+                          <EditIcon />
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="Delete">
                         <IconButton
                           color="error"
-                          onClick={() => handleDelete(isProject ? item?.PROJECT_ID : item?.PURPOSE_ID)}
+                          onClick={() => console.log("Delete Functionality")}
                         >
-                          <DeleteIcon fontSize="small" />
+                          <DeleteIcon />
                         </IconButton>
                       </Tooltip>
                     </TableCell>
                   </TableRow>
                 ))
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={2} align="center">
+                    No Projects Found
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
 
-      <TablePagination
-        component="div"
-        count={filteredItems.length}
-        page={page}
-        rowsPerPage={rowsPerPage}
-        onPageChange={(_, newPage) => setPage(newPage)}
-        onRowsPerPageChange={(e) => {
-          setRowsPerPage(parseInt(e.target.value, 10));
-          setPage(0);
-        }}
-        rowsPerPageOptions={[5, 10, 25]}
-      />
+      {/* Edit Modal */}
 
-      <Dialog open={editOpen} onClose={handleCloseEdit} fullWidth maxWidth="sm">
-        <DialogTitle>{isProject ? "Edit Project" : "Edit Purpose"}</DialogTitle>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        fullWidth
+        maxWidth="sm"
+        disableEnforceFocus
+        disableAutoFocus
+      >
+        <DialogTitle>
+          <Typography variant="body1" sx={{ fontSize: "1.25rem", fontWeight: "bold" }}>
+            Edit Project Details
+          </Typography>
+        </DialogTitle>
         <DialogContent>
-          <TextField
-            fullWidth
-            label="Project Name"
-            name="projectName"
-            value={editItem?.PROJECT_NAME || ""}
-            onChange={(e) => setEditItem({ ...editItem, PROJECT_NAME: e.target.value })}
-            margin="dense"
-          />
-          {!isProject && (
-            <TextField
-              fullWidth
-              label="Purpose Name"
-              name="purposeName"
-              value={editItem?.purposeName || ""}
-              onChange={(e) => setEditItem({ ...editItem, purposeName: e.target.value })}
-              margin="dense"
-            />
+          {selectedProject && (
+            <Box component="form" noValidate sx={{ mt: 2 }}>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    margin="dense"
+                    label="Project Name"
+                    name="PROJECT_NAME"
+                    value={selectedProject.PROJECT_NAME || ""}
+                    onChange={handleChange}
+                    variant="outlined"
+                  />
+                </Grid>
+              </Grid>
+              {modalLoading && (
+                <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+                  <CircularProgress size={24} />
+                </Box>
+              )}
+            </Box>
           )}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseEdit} variant="outlined" color="secondary">Cancel</Button>
-          <Button onClick={handleSaveEdit} variant="contained" color="primary">Save</Button>
+        <DialogActions sx={{ p: 2 }}>
+          <Button onClick={handleClose} variant="outlined">
+            Cancel
+          </Button>
+          <Button
+            onClick={updateProject}
+            variant="contained"
+            color="primary"
+            disabled={modalLoading}
+          >
+            Save
+          </Button>
         </DialogActions>
       </Dialog>
     </Paper>
   );
 };
 
-export default ProjectAndPurposeTable;
+export default ProjectsTable;
