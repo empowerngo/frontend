@@ -114,7 +114,7 @@ export default function DonationReceipt({ receiptData }) {
         <div className="w-full ">
           {/* Thank You Section */}
 
-          <div className="w-full absolute left-[14%] bottom-[25%] items-center mt-6">
+          <div className="w-full absolute left-[40%] bottom-[25%] items-center mt-6">
             <p className=" text-2xl font-bold font-[cursive]">Thank You!</p>
           </div>
 
@@ -132,9 +132,9 @@ export default function DonationReceipt({ receiptData }) {
             />
 
             <img
-              src={parsedData.SIGNATURE_URL}
+              src={parsedData.SEAL_URL}
               alt="Signature"
-              className="h-20 w-40 mb-3 absolute bottom-[20%] left-[35%]"
+              className="h-20 w-40 mb-3 absolute bottom-[20%] left-[13%]"
             />
             <p className="font-bold text-black">Authorized Signatory</p>
             <p className="pr-5 font-bold text-black">
