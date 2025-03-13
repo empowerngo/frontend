@@ -499,11 +499,19 @@ const DonationTable = ({
               <TableCell className="font-semibold text-gray-700">
                 Receipt
               </TableCell>
-              {parsedData.ROLE_CODE === 4 || 3 ? (
+              {/* {parsedData.ROLE_CODE === 4 || 3 ? (
                 ""
               ) : (
                 <>
-                  {" "}
+                  <TableCell className="font-semibold text-gray-700">
+                    Action
+                  </TableCell>
+                </>
+              )} */}
+              {parsedData.ROLE_CODE === 4 && 3 ? (
+                ""
+              ) : (
+                <>
                   <TableCell className="font-semibold text-gray-700">
                     Action
                   </TableCell>
@@ -552,7 +560,7 @@ const DonationTable = ({
                     <Send />
                   </IconButton>
                 </TableCell>
-                {parsedData.ROLE_CODE === 4 || 3 ? (
+                {parsedData.ROLE_CODE === 4 && 3 ? (
                   ""
                 ) : (
                   <>

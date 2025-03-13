@@ -24,13 +24,19 @@ export const validateField = (name) => {
     donorEmail: {
       required: "Email is required",
       pattern: {
-        value: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
+        value: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$",
         message: "Invalid email address",
       },
     },
+    ngoCountry: { required: "Country is required" },
+    ngoState: { required: "State is required" },
+    ngoCity: { required: "City is required" },
     donorPAN: {
-      required: "PAN number is required",
-      pattern: { value: "^[A-Z]{5}[0-9]{4}[A-Z]{1}$", message: "Invalid PAN number" },
+      // required: "PAN number is required",
+      pattern: {
+        value: "^[A-Z]{5}[0-9]{4}[A-Z]{1}$",
+        message: "Invalid PAN number",
+      },
     },
     donorProfession: { required: "Profession is required" },
     donorType: {

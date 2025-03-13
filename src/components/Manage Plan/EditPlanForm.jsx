@@ -8,6 +8,8 @@ import {
   Button,
   Grid,
   Typography,
+  FormControlLabel,
+  Checkbox,
 } from "@mui/material";
 import { getSubsPlans, registerPlan } from "../../api/masterApi";
 
@@ -16,11 +18,15 @@ const EditPlanForm = ({ open, onClose, planID, user }) => {
     PLAN_ID: user?.planID || "",
     PLAN_NAME: user?.planName || "",
     PLAN_PRICE: user?.planPrice || "",
-    PLAN_STATUS: user?.PLAN_STATUS || "",
+    PLAN_STATUS: user?.planStatus || "",
     NUMBER_OF_USERS: user?.numberOfUsers || "",
     NUMBER_OF_DONORS: user?.numberOfDonors || "",
     NUMBER_OF_DONATIONS: user?.numberOfDonations || "",
-    FORM_10BE_REPORT: user?.form10BEReport || "",
+    planValidity: user?.planValidity || "",
+    form10BEMail: user?.form10BEMail || "",
+    form10BdData: user?.form10BdData || "",
+    caAccess: user?.caAccess || "",
+    FORM_10BE_REPORT: user?.form10BEReport === 1 ? "Yes" : "No" || "",
   });
   const [loading, setLoading] = useState(false);
 
@@ -87,34 +93,69 @@ const EditPlanForm = ({ open, onClose, planID, user }) => {
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <DialogTitle>Edit Plan Details</DialogTitle>
+      <DialogTitle>Plan Details</DialogTitle>
       <DialogContent>
         {loading ? (
           <Typography>Loading...</Typography>
         ) : (
           <Grid container spacing={3}>
-            {/* Fields */}
             {[
               { label: "Plan Name", name: "PLAN_NAME" },
               { label: "Plan Price", name: "PLAN_PRICE" },
               { label: "Status", name: "PLAN_STATUS" },
-              { label: "State", name: "NGO_STATE" },
               { label: "No. Of Users", name: "NUMBER_OF_USERS" },
-              { label: "No. Of Donors", name: "NUMBER_OF_DONORS" },
               { label: "No. Of Donations", name: "NUMBER_OF_DONATIONS" },
+              { label: "Plan Validity", name: "planValidity" },
               { label: "Form 10 BE?", name: "FORM_10BE_REPORT" },
+              { label: "Form 10 BE Mail?", name: "form10BEMail" },
+              { label: "Form 10 Bd?", name: "form10BdData" },
+              { label: "CA Access?", name: "caAccess" },
             ].map(({ label, name }) => (
-              <Grid item xs={12} md={6} key={name}>
-                <TextField
-                  label={label}
-                  name={name}
-                  value={planDetails[name] || ""}
-                  onChange={handleChange}
-                  fullWidth
-                  margin="dense"
-                  variant="outlined"
-                  size="small"
-                />
+              <Grid
+                item
+                xs={12}
+                md={
+                  [
+                    "FORM_10BE_REPORT",
+                    "form10BEMail",
+                    "form10BdData",
+                    "caAccess",
+                  ].includes(name)
+                    ? 6
+                    : 6
+                }
+                key={name}
+              >
+                {[
+                  "FORM_10BE_REPORT",
+                  "form10BEMail",
+                  "form10BdData",
+                  "caAccess",
+                ].includes(name) ? (
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={!!planDetails[name]} // Convert 1/0 to true/false
+                        onChange={(e) =>
+                          handleChange({
+                            target: { name, value: e.target.checked ? 1 : 0 },
+                          })
+                        }
+                        disabled
+                      />
+                    }
+                    label={label}
+                  />
+                ) : (
+                  <Grid item xs={12} md={6} key={name}>
+                    <Typography variant="subtitle2" color="textSecondary">
+                      {label}
+                    </Typography>
+                    <Typography variant="body1" color="textPrimary">
+                      {planDetails[name] || "N/A"}
+                    </Typography>
+                  </Grid>
+                )}
               </Grid>
             ))}
           </Grid>
@@ -124,9 +165,9 @@ const EditPlanForm = ({ open, onClose, planID, user }) => {
         <Button onClick={onClose} color="secondary" variant="outlined">
           Cancel
         </Button>
-        <Button onClick={handleSave} color="primary" variant="contained">
+        {/* <Button onClick={handleSave} color="primary" variant="contained">
           Save
-        </Button>
+        </Button> */}
       </DialogActions>
     </Dialog>
   );

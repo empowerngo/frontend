@@ -107,6 +107,20 @@ const RegisterNGO = () => {
     return null;
   };
 
+  const validateImage = (file) => {
+    if (!file || file.length === 0) {
+      return "Image is required";
+    }
+    const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+    if (!allowedTypes.includes(file[0].type)) {
+      return "Only JPG, JPEG, and PNG formats are allowed";
+    }
+    if (file[0].size > 2 * 1024 * 1024) {
+      return "File size should not exceed 2MB";
+    }
+    return true;
+  };
+
   const onSubmit = async (data) => {
     try {
       setIsSubmitting(true);
@@ -234,10 +248,10 @@ const RegisterNGO = () => {
             "Country",
             "ngoCountry",
             validateField("ngoCountry"),
-            "select", // ✅ Changed from "text" to "select"
+            "select",
             "Select Country",
             FaGlobe,
-            { options: countryData } // ✅ Pass the fetched country list as dropdown options
+            { options: countryData }
           )}
           {renderInputField(
             register,
@@ -266,7 +280,7 @@ const RegisterNGO = () => {
             errors,
             "Subscription",
             "subscriptionp",
-            validateField("ngoCity"),
+            validateField("subscriptionp"),
             "select",
             "Select Subscription Plan",
             FaCity,
@@ -277,7 +291,7 @@ const RegisterNGO = () => {
             errors,
             "Pin Code",
             "ngoPinCode",
-            // validateField("ngoPinCode"),
+            validateField("ngoPinCode"),
             "text",
             "Enter Pin Code",
             FaMapMarkerAlt
@@ -297,7 +311,7 @@ const RegisterNGO = () => {
             errors,
             "Contact",
             "ngoContact",
-            // validateField("ngoContact"),
+            validateField("ngoContact"),
             "tel", // Use "tel" for better mobile support
             "Enter Contact",
             FaPhone
@@ -332,7 +346,7 @@ const RegisterNGO = () => {
             errors,
             "PAN Number",
             "ngoPAN",
-            // validateField("ngoPAN"),
+            validateField("ngoPAN"),
             "text",
             "Enter PAN Number",
             FaIdCard
@@ -387,39 +401,66 @@ const RegisterNGO = () => {
             "Enter 80G Number",
             FaBriefcase
           )}
+          {renderInputField(
+            register,
+            errors,
+            "80G Date",
+            "ngo80GDate",
+            validateField("ngo80GDate"),
+            "date",
+            "Enter 80G Date",
+            FaBriefcase
+          )}
           {/* Add file input fields for logo and signature */}
           <div>
             <label className="block text-gray-700 font-medium mb-2">
-              NGO Logo (Image)
+              NGO Logo
             </label>
             <input
               type="file"
               accept="image/*"
-              {...register("logourl")}
+              {...register("logourl", {
+                validate: validateImage,
+              })}
               className="w-full p-2 border border-gray-300 rounded-lg"
             />
+            {errors.logourl && (
+              <p className="text-red-500 text-sm">{errors.logourl.message}</p>
+            )}
           </div>
           <div>
             <label className="block text-gray-700 font-medium mb-2">
-              NGO Signature (Image)
+              NGO Signature
             </label>
             <input
               type="file"
               accept="image/*"
-              {...register("signatureurl")}
+              {...register("signatureurl", {
+                validate: validateImage,
+              })}
               className="w-full p-2 border border-gray-300 rounded-lg"
             />
+            {errors.signatureurl && (
+              <p className="text-red-500 text-sm">
+                {errors.signatureurl.message}
+              </p>
+            )}
           </div>
           <div>
             <label className="block text-gray-700 font-medium mb-2">
-              NGO Seal (Image)
+              NGO Seal
             </label>
             <input
               type="file"
               accept="image/*"
-              {...register("sealurl")}
+              {...register("sealurl", {
+                validate: validateImage,
+              })}
               className="w-full p-2 border border-gray-300 rounded-lg"
             />
+            {errors.sealurl && (
+              <p className="text-red-500 text-sm">{errors.sealurl.message}</p>
+            )}
           </div>
         </div>
 

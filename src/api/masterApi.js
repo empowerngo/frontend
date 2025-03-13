@@ -365,3 +365,13 @@ export const handleNGORequest = async (formData, reqType) => {
     throw error.response?.data || error.message;
   }
 };
+export const handleForm10BERequest = async (formData) => {
+  try {
+    const response = await api.post("/retrieveForm10BDData", formData);
+    console.log("response.data -  ", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error handling NGO request:", error);
+    throw error.response?.data || error.message;
+  }
+};

@@ -228,7 +228,7 @@ const DonorTable = () => {
                           <VisibilityIcon />
                         </IconButton>
                       </Tooltip>
-                      {parsedData.ROLE_CODE === 3 || 4 ? (
+                      {parsedData.ROLE_CODE === 3 && 4 ? (
                         ""
                       ) : (
                         <>

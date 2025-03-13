@@ -123,7 +123,7 @@ function App() {
             <Route
               path="From10BE"
               element={
-                <ProtectedRoute allowedRoles={[ROLES.SUPER_ADMIN]}>
+                <ProtectedRoute allowedRoles={[ROLES.NGO_ADMIN]}>
                   <Form10BE />
                 </ProtectedRoute>
               }

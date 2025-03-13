@@ -9,10 +9,10 @@ const Layout = ({ setIsAuthenticated }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setTimeout(() => setLoading(false), 1000); 
+    setTimeout(() => setLoading(false), 1000);
   }, []);
 
-  if (loading) return <Loading />; 
+  if (loading) return <Loading />;
 
   return (
     <div className="flex">

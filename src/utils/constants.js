@@ -46,7 +46,7 @@ export const menuItems = [
     title: "Manage Donor",
     icon: "DocumentTextIcon",
     route: "/adddonor",
-    roles: [2, 3, 4],
+    roles: [2, 3],
   },
   {
     title: "Manage Donations",
@@ -77,7 +77,7 @@ export const menuItems = [
     title: "Form 10 BE",
     icon: "NewspaperIcon",
     route: "/From10BE",
-    roles: [1],
+    roles: [2],
   },
 ];
 

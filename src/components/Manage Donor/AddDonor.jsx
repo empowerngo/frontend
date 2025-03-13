@@ -261,7 +261,12 @@ const DonorForm = () => {
             "Select Donor Type",
             FaBriefcase,
             {
-              options: ["Individual", "Corporate", "Group", "NGO"],
+              options: [
+                { value: "Individual", displayValue: "Individual" },
+                { value: "Corporate", displayValue: "Corporate" },
+                { value: "Group", displayValue: "Group" },
+                { value: "NGO", displayValue: "NGO" },
+              ],
             }
           )}
         </div>

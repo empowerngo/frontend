@@ -97,6 +97,7 @@ const ManageNGOTable = () => {
     const ngo = ngoMap.get(ngoID);
     if (ngo) {
       setSelectedNGO({ ...ngo });
+      console.log(ngo);
       setOpen(true);
     } else {
       Swal.fire("Error", "NGO not found.", "error");
@@ -373,6 +374,11 @@ const ManageNGOTable = () => {
                   </Grid>
                   <Grid item xs={12}>
                     <Typography variant="subtitle1">
+                      <strong>Subscriptions:</strong> {selectedNGO.ngoEmail}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography variant="subtitle1">
                       <strong>Registration Number:</strong>{" "}
                       {selectedNGO.ngoRegNumber}
                     </Typography>
@@ -380,6 +386,11 @@ const ManageNGOTable = () => {
                   <Grid item xs={12}>
                     <Typography variant="subtitle1">
                       <strong>80G Number:</strong> {selectedNGO.ngo80GNumber}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography variant="subtitle1">
+                      <strong>80G Date:</strong> {selectedNGO.reg80GDate}
                     </Typography>
                   </Grid>
                   <Grid item xs={12}>
@@ -631,6 +642,19 @@ const ManageNGOTable = () => {
                     variant="outlined"
                   />
                 </Grid>
+                <Grid item xs={12} sm={6} gap={0}>
+                  <TextField
+                    type="date"
+                    fullWidth
+                    margin="dense"
+                    label="80G Date"
+                    name="ngo80GDate"
+                    value={selectedNGO.reg80GDate || ""}
+                    onChange={handleChange}
+                    InputLabelProps={{ shrink: true }}
+                    variant="outlined"
+                  />
+                </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
@@ -675,7 +699,7 @@ const ManageNGOTable = () => {
                     variant="outlined"
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={12}>
                   <TextField
                     fullWidth
                     margin="dense"
@@ -686,7 +710,7 @@ const ManageNGOTable = () => {
                     variant="outlined"
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={12}>
                   <div>
                     <label className="block text-gray-700 font-medium mb-2">
                       NGO Logo (Image)
@@ -700,7 +724,7 @@ const ManageNGOTable = () => {
                     />
                   </div>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={12}>
                   <div>
                     <label className="block text-gray-700 font-medium mb-2">
                       NGO Signature (Image)
@@ -714,7 +738,7 @@ const ManageNGOTable = () => {
                     />
                   </div>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={12}>
                   <div>
                     <label className="block text-gray-700 font-medium mb-2">
                       NGO Seal (Image)

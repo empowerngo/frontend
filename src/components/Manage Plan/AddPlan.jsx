@@ -20,7 +20,7 @@ const AddPlan = ({ onAddOrUpdatePlan, editPlan, setEditPlan }) => {
   const [loading, setLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [userRole, setUserRole] = useState(null);
-   const [planList, setPlanList] = useState([]);
+  const [planList, setPlanList] = useState([]);
   const [selectedPlan, setSelectedPlan] = useState("");
 
   useEffect(() => {
@@ -43,7 +43,6 @@ const AddPlan = ({ onAddOrUpdatePlan, editPlan, setEditPlan }) => {
   useEffect(() => {
     const fetchPlanList = async () => {
       try {
-       
         const plans = await getSubsPlans(); // Correct format
         console.log("Plan List API Response:", plans); // Debugging
         setPlanList(Array.isArray(plans.payload) ? plans.payload : []); // Use ngos.payload
@@ -58,13 +57,15 @@ const AddPlan = ({ onAddOrUpdatePlan, editPlan, setEditPlan }) => {
     }
   }, [userRole]);
 
-
   const onSubmit = async (data) => {
     try {
       setIsSubmitting(true);
       setLoading(true);
       data.reqType = "s";
-      data.planID = userRole === 1 ? selectedPlan : JSON.parse(localStorage.getItem("plan"))?.PLAN_ID;
+      data.planID =
+        userRole === 1
+          ? selectedPlan
+          : JSON.parse(localStorage.getItem("plan"))?.PLAN_ID;
       // data.userID = JSON.parse(localStorage.getItem("user"))?.USER_ID;
 
       await registerPlan(data);
@@ -86,9 +87,7 @@ const AddPlan = ({ onAddOrUpdatePlan, editPlan, setEditPlan }) => {
       Swal.fire({
         icon: "fail",
         title: editPlan ? "Plan update failed" : "Plan addition failed",
-        text: editPlan
-          ? "Failed to update Plan!"
-          : "Failed to add Plan",
+        text: editPlan ? "Failed to update Plan!" : "Failed to add Plan",
       });
     } finally {
       setIsSubmitting(false);
@@ -99,7 +98,7 @@ const AddPlan = ({ onAddOrUpdatePlan, editPlan, setEditPlan }) => {
   return (
     <div className="bg-white p-8 shadow-md rounded-lg">
       <h2 className="text-2xl font-bold mb-4 text-gray-800 text-center">
-        {editPlan ? "Edit User" : "Add User"}
+        {editPlan ? "Edit" : "Add"}
       </h2>
 
       {loading && <Loading />}
@@ -138,19 +137,93 @@ const AddPlan = ({ onAddOrUpdatePlan, editPlan, setEditPlan }) => {
               }
 
               return true; // Validation passed
-            }
+            },
           },
           "text", // Or "number" if you prefer a number input (see below)
           "Enter Plan price",
           FaUser
         )}
-        
-        {renderInputField(register, errors, "Number of Users", "numberOfUsers", { required: "Number of users is required", min: 1 }, "number", "", null)}
-        {renderInputField(register, errors, "Number of Donors", "numberOfDonors", { required: "Number of donors is required", min: 0 }, "number", "", null)}
-        {renderInputField(register, errors, "Number of Donations", "numberOfDonations", { required: "Number of donations is required", min: 0 }, "number", "", null)}
-        {renderInputField(register, errors, "10BE Report", "form10BEReport", {}, "checkbox", "", null)} {/* No required for checkbox */}
 
-
+        {renderInputField(
+          register,
+          errors,
+          "Number of Users",
+          "numberOfUsers",
+          { required: "Number of users is required", min: 1 },
+          "number",
+          "",
+          null
+        )}
+        {/* {renderInputField(
+          register,
+          errors,
+          "Number of Donors",
+          "numberOfDonors",
+          { required: "Number of donors is required", min: 0 },
+          "number",
+          "",
+          null
+        )} */}
+        {renderInputField(
+          register,
+          errors,
+          "Number of Donations",
+          "numberOfDonations",
+          { required: "Number of donations is required", min: 0 },
+          "number",
+          "",
+          null
+        )}
+        {renderInputField(
+          register,
+          errors,
+          "Number of Projects",
+          "numberOfProjects",
+          { required: "Number of Projects is required", min: 0 },
+          "number",
+          "",
+          null
+        )}
+        {renderInputField(
+          register,
+          errors,
+          "Plan Validity",
+          "planValidity",
+          { required: "Number of days is required", min: 1 },
+          "number",
+          "",
+          null
+        )}
+        {renderInputField(
+          register,
+          errors,
+          "10BE Mail",
+          "form10BEMail",
+          {},
+          "checkbox",
+          "",
+          null
+        )}
+        {renderInputField(
+          register,
+          errors,
+          "10Bd",
+          "form10BdData",
+          {},
+          "checkbox",
+          "",
+          null
+        )}
+        {renderInputField(
+          register,
+          errors,
+          "CA Access",
+          "caAccess",
+          {},
+          "checkbox",
+          "",
+          null
+        )}
 
         <div className="md:col-span-2 flex justify-end">
           <button
@@ -158,7 +231,11 @@ const AddPlan = ({ onAddOrUpdatePlan, editPlan, setEditPlan }) => {
             className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Processing..." : editPlan ? "Update Plan" : "Add Plan"}
+            {isSubmitting
+              ? "Processing..."
+              : editPlan
+              ? "Update Plan"
+              : "Add Plan"}
           </button>
         </div>
       </form>
