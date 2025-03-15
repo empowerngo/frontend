@@ -142,6 +142,7 @@ const RegisterNGO = () => {
         ngoPinCode,
         ngoRegNumber,
         ngoState,
+        ngo80GDate,
       } = data;
 
       const logoURL = await handleFileUpload(selectedLogo, "logourl");
@@ -173,6 +174,7 @@ const RegisterNGO = () => {
         ngoPinCode,
         ngoRegNumber,
         ngoState,
+        reg80GDate: ngo80GDate,
       };
 
       const response = await handleNGORequest(payload, "s");
