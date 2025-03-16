@@ -84,7 +84,7 @@ const Sidebar = ({ setIsAuthenticated }) => {
       >
        
 
-        <div className="p-5 flex items-center space-x-4 border-b border-blue-700">
+        <div className="p-5 flex items-center space-x-4 border-b border-blue-700 z-50 h-24 lg:h-25">
           <div
             className={`w-12 h-12 ${
               roleColors[user.ROLE_CODE] || "bg-gray-600"
