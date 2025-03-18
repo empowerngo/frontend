@@ -30,6 +30,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import Swal from "sweetalert2";
 import { donorTypes } from "../../utils/constants";
+import { useSelector } from "react-redux";
+import Decrypt from "../../Decrypt";
 
 const DonorTable = () => {
   const [donorList, setDonorList] = useState([]);
@@ -40,7 +42,8 @@ const DonorTable = () => {
   const [viewOpen, setViewOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [modalLoading, setModalLoading] = useState(false);
-  const userData = localStorage.getItem("user");
+  const encryptedUserData = useSelector((state) => state.userData);
+  const userData = Decrypt(encryptedUserData);
   let parsedData;
 
   try {

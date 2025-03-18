@@ -4,6 +4,8 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { manageProject, managePurpose } from "../../api/masterApi";
 import Swal from "sweetalert2";
+import { useSelector } from "react-redux";
+import Decrypt from "../../Decrypt";
 
 const AddProjectAndPurposeForm = ({
   onAddOrUpdate,
@@ -24,16 +26,20 @@ const AddProjectAndPurposeForm = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [ngoID, setNgoID] = useState(null);
   const [createdBy, setCreatedBy] = useState(null);
+  const encryptedUserData = useSelector((state) => state.userData);
 
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem("user"));
+    const userData = JSON.parse(Decrypt(encryptedUserData));
     if (userData?.NGO_ID) setNgoID(userData.NGO_ID);
     if (userData?.USER_ID) setCreatedBy(userData.USER_ID);
   }, []);
 
   useEffect(() => {
     if (editItem) {
-      setValue(isProject ? "projectName" : "purposeName", isProject ? editItem.projectName : editItem.purposeName);
+      setValue(
+        isProject ? "projectName" : "purposeName",
+        isProject ? editItem.projectName : editItem.purposeName
+      );
       if (!isProject) {
         setValue("projectID", editItem.PROJECT_ID || "");
       }
@@ -74,13 +80,21 @@ const AddProjectAndPurposeForm = ({
       if (isProject) {
         await manageProject(formData, "s");
       } else {
-        await managePurpose(formData, "s"); 
+        await managePurpose(formData, "s");
       }
 
       Swal.fire({
         icon: "success",
-        title: editItem ? (isProject ? "Project Updated" : "Purpose Updated") : isProject ? "Project Added" : "Purpose Added",
-        text: editItem ? "Details updated successfully!" : "Successfully added!",
+        title: editItem
+          ? isProject
+            ? "Project Updated"
+            : "Purpose Updated"
+          : isProject
+          ? "Project Added"
+          : "Purpose Added",
+        text: editItem
+          ? "Details updated successfully!"
+          : "Successfully added!",
       });
 
       reset();
@@ -98,39 +112,67 @@ const AddProjectAndPurposeForm = ({
   return (
     <div className="bg-white p-6 shadow-md rounded-lg">
       <h2 className="text-2xl font-bold text-gray-800 mb-4">
-        {editItem ? (isProject ? "Edit Project" : "Edit Purpose") : isProject ? "Add Project" : "Add Purpose"}
+        {editItem
+          ? isProject
+            ? "Edit Project"
+            : "Edit Purpose"
+          : isProject
+          ? "Add Project"
+          : "Add Purpose"}
       </h2>
-      <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-2 gap-4 items-center">
-  {!isProject && (
-    <div>
-      {/* <label className="block text-gray-700">Select Project</label> */}
-      <select {...register("projectID", { required: "Project selection is required" })} className="border p-2 rounded-lg w-full">
-        <option value="">Select Project</option>
-        {projects.length > 0 ? (
-          projects.map((project) => (
-            <option key={project.PROJECT_ID} value={project.PROJECT_ID}>{project.PROJECT_NAME}</option>
-          ))
-        ) : (
-          <option disabled>No projects available</option>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="grid grid-cols-2 gap-4 items-center"
+      >
+        {!isProject && (
+          <div>
+            {/* <label className="block text-gray-700">Select Project</label> */}
+            <select
+              {...register("projectID", {
+                required: "Project selection is required",
+              })}
+              className="border p-2 rounded-lg w-full"
+            >
+              <option value="">Select Project</option>
+              {projects.length > 0 ? (
+                projects.map((project) => (
+                  <option key={project.PROJECT_ID} value={project.PROJECT_ID}>
+                    {project.PROJECT_NAME}
+                  </option>
+                ))
+              ) : (
+                <option disabled>No projects available</option>
+              )}
+            </select>
+            {errors.projectID && (
+              <p className="text-red-500 text-sm">{errors.projectID.message}</p>
+            )}
+          </div>
         )}
-      </select>
-      {errors.projectID && <p className="text-red-500 text-sm">{errors.projectID.message}</p>}
-    </div>
-  )}
 
-  {/* Aligning Input field and Submit button to the right center */}
-  <div className="flex justify-end items-center gap-4">
-    <input 
-      {...register(isProject ? "projectName" : "purposeName", { required: `${isProject ? "Project" : "Purpose"} name is required` })} 
-      placeholder={`Enter ${isProject ? "Project" : "Purpose"} Name`} 
-      className="border p-2 rounded-lg w-full" 
-    />
-    
-    <button type="submit" className={`py-2 px-4 rounded-lg text-white ${isProject ? "bg-blue-600 hover:bg-blue-700" : "bg-green-600 hover:bg-green-700"}`} disabled={isSubmitting}>
-      {isSubmitting ? "Processing..." : editItem ? "Update" : "Add"}
-    </button>
-  </div>
-</form>
+        {/* Aligning Input field and Submit button to the right center */}
+        <div className="flex justify-end items-center gap-4">
+          <input
+            {...register(isProject ? "projectName" : "purposeName", {
+              required: `${isProject ? "Project" : "Purpose"} name is required`,
+            })}
+            placeholder={`Enter ${isProject ? "Project" : "Purpose"} Name`}
+            className="border p-2 rounded-lg w-full"
+          />
+
+          <button
+            type="submit"
+            className={`py-2 px-4 rounded-lg text-white ${
+              isProject
+                ? "bg-blue-600 hover:bg-blue-700"
+                : "bg-green-600 hover:bg-green-700"
+            }`}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Processing..." : editItem ? "Update" : "Add"}
+          </button>
+        </div>
+      </form>
     </div>
   );
 };

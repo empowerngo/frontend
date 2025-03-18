@@ -7,6 +7,8 @@ import {
 } from "react";
 import Papa from "papaparse";
 import { importFile, getStatement } from "../../api/masterApi";
+import { useSelector } from "react-redux";
+import Decrypt from "../../Decrypt";
 
 const UploadBankStatement = forwardRef((props, ref) => {
   const buttonRef = useRef(null);
@@ -16,10 +18,11 @@ const UploadBankStatement = forwardRef((props, ref) => {
   const [csvData, setCsvData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 5;
-  const userData = localStorage.getItem("user");
+  const encryptedUserData = useSelector((state) => state.userData);
+  const userData = Decrypt(encryptedUserData);
 
   const getStatementfromServer = async () => {
-    const statement = await getStatement();
+    const statement = await getStatement(encryptedUserData);
     setCsvData(statement.payload);
     console.log(statement);
     return statement;

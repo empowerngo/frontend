@@ -34,7 +34,7 @@ export const menuItems = [
     title: "Dashboard",
     icon: "HomeIcon",
     route: "/dashboard",
-    roles: [1, 2, 3],
+    roles: [1, 2],
   },
   {
     title: "Manage User",

@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { getDonorData, handleDonationRequest } from "../../api/masterApi";
+import { useSelector } from "react-redux";
+import Decrypt from "../../Decrypt";
 
 const PaymentDetails = ({
   selectedTransaction,
@@ -20,8 +22,9 @@ const PaymentDetails = ({
   const [selectedRow, setSelectedRow] = useState(null);
   const [allDonars, setallDonars] = useState([]);
   const [selectedDonar, setSelectedDonar] = useState("");
+  const encryptedUserData = useSelector((state) => state.userData);
 
-  const userData = localStorage.getItem("user");
+  const userData = Decrypt(encryptedUserData);
   let parsedData = JSON.parse(userData);
 
   const fetchDonors = async () => {
@@ -209,7 +212,7 @@ const PaymentDetails = ({
   };
 
   const handleSubmit = () => {
-    const NGO_ID = localStorage.getItem("user");
+    const NGO_ID = Decrypt(encryptedUserData);
     const parsedData = JSON.parse(NGO_ID);
     const { amount, bank, type, purpose, project, donationDate, note } =
       formData;

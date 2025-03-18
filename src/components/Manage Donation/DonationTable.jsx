@@ -10,7 +10,13 @@ import {
   Alert,
 } from "@mui/material";
 import { Edit, Delete, Visibility, Send, Download } from "@mui/icons-material";
-import { useEffect, useState, forwardRef, useImperativeHandle, useRef } from "react";
+import {
+  useEffect,
+  useState,
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+} from "react";
 import { retrieveDonations, sendEmail } from "../../api/masterApi";
 import DonationReceipt from "./Recipt";
 import { renderToString } from "react-dom/server";
@@ -18,23 +24,25 @@ import { debounce } from "lodash"; // Import lodash for debounce
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import html2pdf from "html2pdf.js";
+import { useSelector } from "react-redux";
+import Decrypt from "../../Decrypt";
 
 // const DonationTable = ({
 //   setFormData,
 //   setShowForm,
 //   setSelectedDonationTable,
 //   selectedTransaction,
-  
+
 // }) => {
-  const DonationTable = forwardRef((props, ref) => {
-    
-    const buttonRef = useRef(null);
+const DonationTable = forwardRef((props, ref) => {
+  const buttonRef = useRef(null);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [donations, setdonations] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const encryptedUserData = useSelector((state) => state.userData);
   const rowsPerPage = 10;
-  const userData = localStorage.getItem("user");
+  const userData = Decrypt(encryptedUserData);
 
   const [donors, setDonors] = useState([]);
   const [filteredDonors, setFilteredDonors] = useState([]);
@@ -52,7 +60,7 @@ import html2pdf from "html2pdf.js";
   };
 
   const getDonationfromServer = async () => {
-    const statement = await retrieveDonations();
+    const statement = await retrieveDonations(Decrypt(encryptedUserData));
     setDonors(statement.payload);
     setFilteredDonors(statement.payload);
     console.log(statement, "statement");
@@ -234,7 +242,10 @@ import html2pdf from "html2pdf.js";
 
   const pdfViewReceipt = (donation, i) => {
     const receiptHtml = renderToString(
-      <DonationReceipt receiptData={donation} />
+      <DonationReceipt
+        receiptData={donation}
+        encryptedUserData={encryptedUserData}
+      />
     );
 
     const hiddenContainer = document.createElement("div");
@@ -302,7 +313,10 @@ import html2pdf from "html2pdf.js";
   };
   const pdfDownloadReceipt = (donation, i) => {
     const receiptHtml = renderToString(
-      <DonationReceipt receiptData={donation} />
+      <DonationReceipt
+        receiptData={donation}
+        encryptedUserData={encryptedUserData}
+      />
     );
 
     const hiddenContainer = document.createElement("div");
@@ -381,7 +395,12 @@ import html2pdf from "html2pdf.js";
 
   const ShareReceipt = async (i) => {
     try {
-      const receiptHtml = renderToString(<DonationReceipt receiptData={i} />);
+      const receiptHtml = renderToString(
+        <DonationReceipt
+          receiptData={i}
+          encryptedUserData={encryptedUserData}
+        />
+      );
 
       const hiddenContainer = document.createElement("div");
       hiddenContainer.style.position = "absolute";
@@ -468,7 +487,7 @@ import html2pdf from "html2pdf.js";
 
         {/* Next Button */}
         <button
-         ref={buttonRef} 
+          ref={buttonRef}
           onClick={() => getDonationfromServer()}
           className="px-4 py-2 bg-blue-700 text-white hover:bg-blue-800 rounded-lg disabled:bg-gray-100 disabled:text-gray-400 transition"
           aria-label="Next Page"

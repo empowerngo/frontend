@@ -1,25 +1,59 @@
-import MonthlyDonations from "../../components/dashboard/MonthlyDonations";
-import TotalStaff from "../../components/dashboard/TotalStaff";
-import DonorList from "../../components/dashboard/DonorList";
+import { useEffect, useState } from "react";
+import DonationSummary from "../../components/dashboard/DonationDashboard";
+import { retrieveDashboard } from "../../api/masterApi";
+import { useSelector } from "react-redux";
+import Decrypt from "../../Decrypt";
+import SuperAdminDashboard from "../../components/dashboard/SuperAdminDashboard";
+const data = {
+  dailySummary: [
+    { TodaySum: "0.00", MonthToDateSum: "7502.00", YearToDateSum: "179729.00" },
+  ],
+  monthlySummary: [
+    { DonationMonth: 2, MonthlySum: "172227.00" },
+    { DonationMonth: 3, MonthlySum: "7502.00" },
+  ],
+  receiptCount: [{ RECEIPT_COUNT: 27 }],
+  userCount: [{ USER_COUNT: 6 }],
+  donationSummary: [
+    { PROJECT: "Balgram", PURPOSE: "Child Shelter", AMOUNT: "200.00" },
+    { PROJECT: "Balgram", PURPOSE: "Education", AMOUNT: "7000.00" },
+    { PROJECT: "Balgram", PURPOSE: "Education Support", AMOUNT: "2299.00" },
+    { PROJECT: "Balgram", PURPOSE: "Food Support", AMOUNT: "1100.00" },
+    { PROJECT: "Balgram", PURPOSE: "Medical Support", AMOUNT: "15703.00" },
+    { PROJECT: "Balgram", PURPOSE: "Nutrition", AMOUNT: "14151.00" },
+    {
+      PROJECT: "Scholarship Program",
+      PURPOSE: "Education",
+      AMOUNT: "134876.00",
+    },
+    { PROJECT: "Yuvagram", PURPOSE: "Food Support", AMOUNT: "6302.00" },
+    { PROJECT: "Yuvagram", PURPOSE: "Scholarship", AMOUNT: "4000.00" },
+  ],
+};
 
 const Dashboard = () => {
+  const [Data, setData] = useState(null);
+  const encryptedUserData = useSelector((state) => state.userData);
+  const userData = JSON.parse(Decrypt(encryptedUserData));
+  console.log(userData);
+  const getData = async () => {
+    const response = await retrieveDashboard(Decrypt(encryptedUserData));
+    console.log(response);
+    setData(response);
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
+
   return (
-    <div className="flex bg-gray-100 min-h-screen p-4">
-      <div className="flex-grow p-6">
-        <h1 className="text-2xl font-semibold text-blue-700 mb-6">Dashboard</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-4 rounded-lg shadow-md">
-          <div className="p-4 rounded-lg bg-gray-50 shadow-sm">
-            <MonthlyDonations />
-          </div>
-          <div className="p-4 rounded-lg bg-gray-50 shadow-sm">
-            <TotalStaff />
-          </div>
-        </div>
-        <div className="mt-6 p-4 rounded-lg shadow-md bg-white">
-          <DonorList />
-        </div>
-      </div>
-    </div>
+    <>
+      {userData.ROLE_CODE === 1 ? (
+        <SuperAdminDashboard data={Data || {}} />
+      ) : (
+        <DonationSummary data={Data || {}} />
+      )}
+    </>
   );
 };
 

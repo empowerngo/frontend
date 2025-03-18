@@ -2,16 +2,18 @@
 import { useState } from "react";
 import LeftSide from "../../components/LeftSide";
 import ForgotPasswordModal from "../../components/ForgotPasswordModal";
-import { toast } from "react-toastify"; 
-import LoadingSpinner from "../../components/LoadingSpinner"; 
+import { toast } from "react-toastify";
+import LoadingSpinner from "../../components/LoadingSpinner";
 import bgRight from "../../assets/bgRight.svg";
-import { loginUser } from "../../api/masterApi";  
+import { loginUser } from "../../api/masterApi";
+import { useDispatch } from "react-redux";
 
 function SignIn({ setIsAuthenticated }) {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const dispatch = useDispatch();
 
   const handleForgotPasswordSuccess = (email) => {
     console.log(`Forgot password email sent to: ${email}`);
@@ -29,12 +31,12 @@ function SignIn({ setIsAuthenticated }) {
     setLoading(true);
 
     try {
-      const response = await loginUser({ email, password });
+      const response = await loginUser({ email, password }, dispatch);
       if (response.status === "SUCCESS") {
         localStorage.setItem("authToken", response.payload.token);
-        localStorage.setItem("user", JSON.stringify(response.payload.user));
+        // localStorage.setItem("user", JSON.stringify(response.payload.user));
         toast.success("Sign In Successful!");
-        setIsAuthenticated(true); 
+        setIsAuthenticated(true);
         setTimeout(() => {
           setLoading(false);
         }, 1000);
@@ -54,7 +56,7 @@ function SignIn({ setIsAuthenticated }) {
       <div
         className="flex-grow bg-white flex items-center justify-center px-4 md:px-8 lg:px-16"
         style={{
-          backgroundImage:`url(${bgRight})` ,
+          backgroundImage: `url(${bgRight})`,
           backgroundSize: "cover",
         }}
       >
@@ -77,7 +79,7 @@ function SignIn({ setIsAuthenticated }) {
                 placeholder="Enter your email"
                 required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)} 
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
@@ -95,7 +97,7 @@ function SignIn({ setIsAuthenticated }) {
                 placeholder="Enter your password"
                 required
                 value={password}
-                onChange={(e) => setPassword(e.target.value)} 
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
 

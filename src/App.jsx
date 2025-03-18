@@ -20,25 +20,47 @@ import Loading from "./components/LoadingSpinner";
 import ManageDonation from "./components/Manage Donation/ManageDonation";
 import ManagePlan from "./components/Manage Plan/ManagePlan";
 import Form10BE from "./components/form10be/Form10BE";
+import { useDispatch, useSelector } from "react-redux";
+import { clearUserData } from "./store";
+import Decrypt from "./Decrypt";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true);
+  const encryptedUserData = useSelector((state) => state.userData);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const handleStorageChange = (event) => {
+      if (event.key === "encryptedData") {
+        alert("Warning: Local storage data was modified externally!");
+        dispatch(clearUserData());
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, [dispatch]);
 
   useEffect(() => {
     const token = localStorage.getItem("authToken");
-    const userData = localStorage.getItem("user");
+    const userData = Decrypt(encryptedUserData);
 
-    setTimeout(() => {
-      if (token && userData) {
-        const parsedUser = JSON.parse(userData);
-        setIsAuthenticated(true);
-        setUserRole(parsedUser?.ROLE_CODE || ROLES.NGO_CA);
-      }
-      setLoading(false);
-    }, 1000);
-  }, []);
+    if (token && userData) {
+      const parsedUser = JSON.parse(userData);
+      setIsAuthenticated(true);
+      setUserRole(parsedUser?.ROLE_CODE || ROLES.NGO_CA);
+    } else {
+      setIsAuthenticated(false);
+      setUserRole(null);
+    }
+
+    setLoading(false);
+  }, [encryptedUserData]);
 
   if (loading) return <Loading />;
 
@@ -50,6 +72,21 @@ function App() {
       return <Navigate to="/dashboard" replace />;
     }
     return children;
+  };
+
+  const getDefaultRoute = (role) => {
+    switch (role) {
+      case ROLES.SUPER_ADMIN:
+        return "/dashboard";
+      case ROLES.NGO_ADMIN:
+        return "/dashboard";
+      case ROLES.NGO_STAFF:
+        return "/adddonor";
+      case ROLES.NGO_CA:
+        return "/manageDonation";
+      default:
+        return "/dashboard";
+    }
   };
 
   return (
@@ -64,7 +101,7 @@ function App() {
               !isAuthenticated ? (
                 <SignIn setIsAuthenticated={setIsAuthenticated} />
               ) : (
-                <Navigate to="/dashboard" replace />
+                <Navigate to={getDefaultRoute(userRole)} replace />
               )
             }
           />
@@ -78,8 +115,26 @@ function App() {
               )
             }
           >
-            <Route index element={<Dashboard />} />
-            <Route path="dashboard" element={<Dashboard />} />
+            <Route
+              index
+              element={
+                [ROLES.SUPER_ADMIN, ROLES.NGO_ADMIN].includes(userRole) ? (
+                  <Navigate to="/dashboard" replace />
+                ) : (
+                  <Navigate to="/manageDonation" replace />
+                )
+              }
+            />
+            <Route
+              path="dashboard"
+              element={
+                <ProtectedRoute
+                  allowedRoles={[ROLES.SUPER_ADMIN, ROLES.NGO_ADMIN]}
+                >
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="addstaff"
               element={

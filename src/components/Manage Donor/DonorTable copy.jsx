@@ -30,6 +30,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import Swal from "sweetalert2";
 import { donorTypes } from "../../utils/constants";
+import { useSelector } from "react-redux";
+import Decrypt from "../../Decrypt";
 
 const DonorTable = () => {
   const [donorList, setDonorList] = useState([]);
@@ -39,7 +41,8 @@ const DonorTable = () => {
   const [viewOpen, setViewOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [modalLoading, setModalLoading] = useState(false);
-  const userData = localStorage.getItem("user");
+  const encryptedUserData = useSelector((state) => state.userData);
+  const userData = Decrypt(encryptedUserData);
   let parsedData;
 
   try {
@@ -130,7 +133,6 @@ const DonorTable = () => {
       return;
     }
 
-
     const { createdAt, ...updatedDonorData } = selectedDonor;
     const updatedDonor = {
       ...updatedDonorData,
@@ -205,7 +207,9 @@ const DonorTable = () => {
                 donorList.map((donor, index) => (
                   <TableRow key={index}>
                     <TableCell align="center">
-                      {`${donor.donorFName} ${donor.donorMName || ""} ${donor.donorLName}`}
+                      {`${donor.donorFName} ${donor.donorMName || ""} ${
+                        donor.donorLName
+                      }`}
                     </TableCell>
                     <TableCell align="center">{donor.donorEmail}</TableCell>
                     <TableCell align="center">{donor.donorMobile}</TableCell>
@@ -229,16 +233,21 @@ const DonorTable = () => {
                         View
                       </Button> */}
                       <Tooltip title="View">
-                        <IconButton color="primary" onClick={() => handleView(donor.donorID)}>
+                        <IconButton
+                          color="primary"
+                          onClick={() => handleView(donor.donorID)}
+                        >
                           <VisibilityIcon />
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="Edit">
-                        <IconButton color="secondary" onClick={() => handleEdit(donor.donorID)}>
+                        <IconButton
+                          color="secondary"
+                          onClick={() => handleEdit(donor.donorID)}
+                        >
                           <EditIcon />
                         </IconButton>
                       </Tooltip>
-
                     </TableCell>
                   </TableRow>
                 ))
@@ -268,7 +277,10 @@ const DonorTable = () => {
           <Typography variant="h5">Edit Donor Details</Typography>
         </DialogTitle> */}
         <DialogTitle>
-          <Typography variant="body1" sx={{ fontSize: '1.25rem', fontWeight: 'bold' }}>
+          <Typography
+            variant="body1"
+            sx={{ fontSize: "1.25rem", fontWeight: "bold" }}
+          >
             Edit Donor Details
           </Typography>
         </DialogTitle>
@@ -464,12 +476,16 @@ const DonorTable = () => {
         disableEnforceFocus
         disableAutoFocus
       >
-
         {/* <DialogTitle sx={{ textAlign: "center", fontWeight: "bold" }}>
           Donor Details
         </DialogTitle> */}
         <DialogTitle sx={{ textAlign: "center", fontWeight: "bold" }}>
-          <Typography variant="body1" sx={{ fontSize: '1.25rem', fontWeight: 'bold' }}>Donor Details</Typography>
+          <Typography
+            variant="body1"
+            sx={{ fontSize: "1.25rem", fontWeight: "bold" }}
+          >
+            Donor Details
+          </Typography>
         </DialogTitle>
         <DialogContent>
           {modalLoading ? (
@@ -484,24 +500,26 @@ const DonorTable = () => {
                   p: 2,
                   borderRadius: 2,
                   boxShadow: 2,
-                  backgroundColor: "#fafafa"
+                  backgroundColor: "#fafafa",
                 }}
               >
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
                     <Typography variant="subtitle1">
                       <strong>Name:</strong>{" "}
-                      {`${selectedDonor.donorFName} ${selectedDonor.donorMName || ""
-                        } ${selectedDonor.donorLName}`}
+                      {`${selectedDonor.donorFName} ${
+                        selectedDonor.donorMName || ""
+                      } ${selectedDonor.donorLName}`}
                     </Typography>
                   </Grid>
                   <Grid item xs={12}>
                     <Typography variant="subtitle1">
                       <strong>Address:</strong>{" "}
-                      {`${selectedDonor.donorAddress} ${selectedDonor.donorCity || ""
-                        } ${selectedDonor.donorState || ""
-                        } ${selectedDonor.donorCountry || ""
-                        } ${selectedDonor.donorPinCode}`}
+                      {`${selectedDonor.donorAddress} ${
+                        selectedDonor.donorCity || ""
+                      } ${selectedDonor.donorState || ""} ${
+                        selectedDonor.donorCountry || ""
+                      } ${selectedDonor.donorPinCode}`}
                     </Typography>
                   </Grid>
                   <Grid item xs={12}>
@@ -531,7 +549,8 @@ const DonorTable = () => {
                   </Grid>
                   <Grid item xs={12}>
                     <Typography variant="subtitle1">
-                      <strong>Profession:</strong> {selectedDonor.donorProfession}
+                      <strong>Profession:</strong>{" "}
+                      {selectedDonor.donorProfession}
                     </Typography>
                   </Grid>
                 </Grid>

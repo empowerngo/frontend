@@ -25,8 +25,11 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Swal from "sweetalert2";
 import { getPurposes, managePurpose } from "../../api/masterApi";
+import { useSelector } from "react-redux";
+import Decrypt from "../../Decrypt";
 
 const ProjectsTable = () => {
+  const encryptedUserData = useSelector((state) => state.userData);
   const [projectList, setProjectList] = useState([]);
   const [projectMap, setProjectMap] = useState(new Map()); // Efficient lookup
   const [searchTerm, setSearchTerm] = useState("");
@@ -35,7 +38,7 @@ const ProjectsTable = () => {
   const [loading, setLoading] = useState(false);
   const [modalLoading, setModalLoading] = useState(false);
 
-  const userData = localStorage.getItem("user");
+  const userData = Decrypt(encryptedUserData);
   let parsedData;
 
   try {
@@ -51,11 +54,9 @@ const ProjectsTable = () => {
     try {
       const response = await getPurposes(ngoID);
 
-  
       if (Array.isArray(response)) {
         setProjectList(response);
-      
-  
+
         const map = new Map();
         response.forEach((project) => {
           map.set(project.PROJECT_ID, project);
@@ -69,11 +70,9 @@ const ProjectsTable = () => {
     }
     setLoading(false);
   };
-  
 
   useEffect(() => {
     fetchProjectPurpose();
-    
   }, []);
 
   const filteredProjectList = useMemo(() => {
@@ -92,9 +91,6 @@ const ProjectsTable = () => {
       return projectName.includes(lowerSearchTerm);
     });
   }, [projectList, searchTerm]);
- 
-
-  
 
   const handleEdit = (projectID) => {
     const project = projectMap.get(projectID);
@@ -121,7 +117,11 @@ const ProjectsTable = () => {
 
   const updateProject = async () => {
     if (!selectedProject || !selectedProject.PROJECT_ID) {
-      Swal.fire("Error", "Project ID is required for updating details.", "error");
+      Swal.fire(
+        "Error",
+        "Project ID is required for updating details.",
+        "error"
+      );
       return;
     }
 
@@ -225,7 +225,10 @@ const ProjectsTable = () => {
         disableAutoFocus
       >
         <DialogTitle>
-          <Typography variant="body1" sx={{ fontSize: "1.25rem", fontWeight: "bold" }}>
+          <Typography
+            variant="body1"
+            sx={{ fontSize: "1.25rem", fontWeight: "bold" }}
+          >
             Edit Project Details
           </Typography>
         </DialogTitle>

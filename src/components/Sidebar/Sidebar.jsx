@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   HomeIcon,
   UsersIcon,
@@ -19,7 +19,8 @@ import {
 } from "../../utils/constants";
 import Loading from "../LoadingSpinner";
 import "./style.css";
-import Logo from "../../assets/Logo.png"; // Import Logo
+import { useSelector } from "react-redux";
+import Decrypt from "../../Decrypt";
 
 const iconComponents = {
   HomeIcon,
@@ -31,11 +32,13 @@ const iconComponents = {
 };
 
 const Sidebar = ({ setIsAuthenticated }) => {
+  const encryptedUserData = useSelector((state) => state.userData);
   const [isOpen, setIsOpen] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const user = useMemo(() => {
-    const storedUser = JSON.parse(localStorage.getItem("user")) || {
+    const storedUser = JSON.parse(Decrypt(encryptedUserData)) || {
       FNAME: "Admin User",
       NGO_NAME: "Default NGO",
       ROLE_CODE: 1,
@@ -82,12 +85,7 @@ const Sidebar = ({ setIsAuthenticated }) => {
           isOpen ? "w-72" : "-translate-x-full"
         } md:translate-x-0`}
       >
-       
-
-
-
-       <div className="p-5 flex items-center space-x-4 border-b border-blue-700 z-50 h-24 lg:h-25">
-
+        <div className="p-5 flex items-center space-x-4 border-b border-blue-700">
           <div
             className={`w-12 h-12 ${
               roleColors[user.ROLE_CODE] || "bg-gray-600"
@@ -108,11 +106,15 @@ const Sidebar = ({ setIsAuthenticated }) => {
         <div className="flex-grow p-4 space-y-2 overflow-auto sidebar-content">
           {filteredMenuItems.map((item, index) => {
             const IconComponent = iconComponents[item.icon];
+            const isActive = location.pathname === item.route;
+
             return (
               <button
                 key={index}
                 onClick={() => handleNavigation(item.route)}
-                className="w-full flex items-center p-3 rounded-lg text-lg hover:bg-blue-800 transition-all"
+                className={`w-full flex items-center p-3 rounded-lg text-lg transition-all ${
+                  isActive ? "bg-blue-700 text-white" : "hover:bg-blue-800"
+                }`}
               >
                 <div className="flex items-center space-x-3">
                   {IconComponent && (

@@ -7,6 +7,8 @@ import renderInputField from "../../components/CustomInputField";
 import Loading from "../../components/LoadingSpinner";
 import Swal from "sweetalert2";
 import { FaUser, FaEnvelope, FaPhone, FaEye, FaEyeSlash } from "react-icons/fa";
+import { useSelector } from "react-redux";
+import Decrypt from "../../Decrypt";
 
 const AddStaff = ({ onAddOrUpdateStaff, editStaff, setEditStaff }) => {
   const {
@@ -23,11 +25,12 @@ const AddStaff = ({ onAddOrUpdateStaff, editStaff, setEditStaff }) => {
   const [userRole, setUserRole] = useState(null);
   const [ngoList, setNgoList] = useState([]);
   const [selectedNgo, setSelectedNgo] = useState("");
+  const encryptedUserData = useSelector((state) => state.userData);
 
   const roleMapping = { "NGO ADMIN": 2, "NGO STAFF": 3, "NGO CA": 4 };
 
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem("user"));
+    const userData = JSON.parse(Decrypt(encryptedUserData));
     if (userData?.USER_ID) setValue("userID", userData.USER_ID);
     if (userData?.NGO_ID) setValue("ngoID", userData.NGO_ID);
     if (userData?.ROLE_CODE) {
@@ -48,12 +51,12 @@ const AddStaff = ({ onAddOrUpdateStaff, editStaff, setEditStaff }) => {
     const fetchNGOList = async () => {
       try {
         const reqType = "list";
-        const ngos = await retrieveNGOList(reqType); 
-        console.log("NGO List API Response:", ngos); 
-        setNgoList(Array.isArray(ngos.payload) ? ngos.payload : []); 
+        const ngos = await retrieveNGOList(reqType);
+        console.log("NGO List API Response:", ngos);
+        setNgoList(Array.isArray(ngos.payload) ? ngos.payload : []);
       } catch (error) {
         console.error("Error fetching NGO list:", error);
-        setNgoList([]); 
+        setNgoList([]);
       }
     };
 
@@ -61,7 +64,6 @@ const AddStaff = ({ onAddOrUpdateStaff, editStaff, setEditStaff }) => {
       fetchNGOList();
     }
   }, [userRole]);
-
 
   const onSubmit = async (data) => {
     try {
@@ -72,8 +74,11 @@ const AddStaff = ({ onAddOrUpdateStaff, editStaff, setEditStaff }) => {
       }
 
       data.reqType = "s";
-      data.ngoID = userRole === 1 ? selectedNgo : JSON.parse(localStorage.getItem("user"))?.NGO_ID;
-      data.userID = JSON.parse(localStorage.getItem("user"))?.USER_ID;
+      data.ngoID =
+        userRole === 1
+          ? selectedNgo
+          : JSON.parse(Decrypt(encryptedUserData))?.NGO_ID;
+      data.userID = JSON.parse(Decrypt(encryptedUserData))?.USER_ID;
 
       await registerUser(data);
 
@@ -94,9 +99,7 @@ const AddStaff = ({ onAddOrUpdateStaff, editStaff, setEditStaff }) => {
       Swal.fire({
         icon: "fail",
         title: editStaff ? "User update failed" : "User addition failed",
-        text: editStaff
-          ? "Failed to update User!"
-          : "Failed to add User",
+        text: editStaff ? "Failed to update User!" : "Failed to add User",
       });
     } finally {
       setIsSubmitting(false);
@@ -170,7 +173,9 @@ const AddStaff = ({ onAddOrUpdateStaff, editStaff, setEditStaff }) => {
             </select>
           )}
           {errors.roleCode && (
-            <p className="text-red-500 text-sm mt-1">{errors.roleCode.message}</p>
+            <p className="text-red-500 text-sm mt-1">
+              {errors.roleCode.message}
+            </p>
           )}
         </div>
         {userRole === 1 && (
@@ -229,7 +234,9 @@ const AddStaff = ({ onAddOrUpdateStaff, editStaff, setEditStaff }) => {
         )}
 
         <div className="relative">
-          <label className="block text-gray-700 font-medium mb-2">Password</label>
+          <label className="block text-gray-700 font-medium mb-2">
+            Password
+          </label>
           <input
             type={showPassword ? "text" : "password"}
             {...register("password", { required: "Password is required" })}
@@ -250,7 +257,11 @@ const AddStaff = ({ onAddOrUpdateStaff, editStaff, setEditStaff }) => {
             className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Processing..." : editStaff ? "Update User" : "Add User"}
+            {isSubmitting
+              ? "Processing..."
+              : editStaff
+              ? "Update User"
+              : "Add User"}
           </button>
         </div>
       </form>

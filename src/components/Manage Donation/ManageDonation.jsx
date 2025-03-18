@@ -4,11 +4,14 @@ import PaymentDetails from "./PaymentDetails";
 import DonationTable from "./DonationTable";
 import DonationReceipt from "./Recipt";
 import { handleDonationRequest } from "../../api/masterApi";
+import { useSelector } from "react-redux";
+import Decrypt from "../../Decrypt";
 
 const ManageDonation = () => {
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const [selectedDonationTable, setSelectedDonationTable] = useState(null);
   const [isSearchDisable, setisSearchDisable] = useState(false);
+  const encryptedUserData = useSelector((state) => state.userData);
   const [formData, setFormData] = useState({
     amount: "",
     bank: "",
@@ -20,7 +23,7 @@ const ManageDonation = () => {
     transactionID: "",
   });
   const [showForm, setShowForm] = useState(false);
-  const userData = localStorage.getItem("user");
+  const userData = Decrypt(encryptedUserData);
   let parsedData = JSON.parse(userData);
 
   const donationTableRef = useRef(null);

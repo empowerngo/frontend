@@ -7,6 +7,8 @@ import renderInputField from "../../components/CustomInputField";
 import Loading from "../../components/LoadingSpinner";
 import Swal from "sweetalert2";
 import { FaUser, FaEnvelope, FaPhone, FaEye, FaEyeSlash } from "react-icons/fa";
+import Decrypt from "../../Decrypt";
+import { useSelector } from "react-redux";
 
 const AddPlan = ({ onAddOrUpdatePlan, editPlan, setEditPlan }) => {
   const {
@@ -22,9 +24,10 @@ const AddPlan = ({ onAddOrUpdatePlan, editPlan, setEditPlan }) => {
   const [userRole, setUserRole] = useState(null);
   const [planList, setPlanList] = useState([]);
   const [selectedPlan, setSelectedPlan] = useState("");
+  const encryptedUserData = useSelector((state) => state.userData);
 
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem("user"));
+    const userData = JSON.parse(Decrypt(encryptedUserData));
     if (userData?.USER_ID) setValue("userID", userData.USER_ID);
     // if (userData?.NGO_ID) setValue("ngoID", userData.NGO_ID);
     // if (userData?.ROLE_CODE) {
@@ -66,7 +69,7 @@ const AddPlan = ({ onAddOrUpdatePlan, editPlan, setEditPlan }) => {
         userRole === 1
           ? selectedPlan
           : JSON.parse(localStorage.getItem("plan"))?.PLAN_ID;
-      // data.userID = JSON.parse(localStorage.getItem("user"))?.USER_ID;
+      // data.userID = JSON.parse(Decrypt(encryptedUserData))?.USER_ID;
 
       await registerPlan(data);
 

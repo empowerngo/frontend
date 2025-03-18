@@ -9,8 +9,11 @@ import {
 } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import Logo from "../../assets/Logo.png"; // Import Logo
+import Decrypt from "../../Decrypt";
+import { useSelector } from "react-redux";
 
 const Navbar = ({ setIsAuthenticated }) => {
+  const encryptedUserData = useSelector((state) => state.userData);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [userName, setUserName] = useState("");
   const [userRole, setUserRole] = useState("");
@@ -18,7 +21,7 @@ const Navbar = ({ setIsAuthenticated }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user")); // Retrieve user object
+    const user = JSON.parse(Decrypt(encryptedUserData));
 
     if (user) {
       const roleCode = user.ROLE_CODE;
@@ -42,8 +45,10 @@ const Navbar = ({ setIsAuthenticated }) => {
   };
 
   return (
-    <nav className="bg-blue-900 text-white shadow-lg fixed top-0 left-72 right-0 z-50 h-24 lg:h-25 flex items-center px-6 lg:px-10">
-      <div className="flex items-center"> {/* Container for Logo & text */}
+    <nav className="bg-blue-900 text-white fixed top-0 left-72 right-0 z-50 h-[88px] lg:h-25 flex items-center px-6 lg:px-10 border-b border-blue-700">
+      <div className="flex items-center">
+        {" "}
+        {/* Container for Logo & text */}
         <img
           src={Logo}
           alt="EmpowerNGO Logo"
@@ -51,7 +56,9 @@ const Navbar = ({ setIsAuthenticated }) => {
         />
         <div>
           <h1 className="text-2xl font-bold">EmpowerNGO</h1>
-          <p className="text-sm text-blue-200">Tech-powered Transformation for NGOs</p>
+          <p className="text-sm text-blue-200">
+            Tech-powered Transformation for NGOs
+          </p>
         </div>
       </div>
       <div className="ml-auto flex items-center space-x-6 lg:space-x-10">
@@ -68,12 +75,8 @@ const Navbar = ({ setIsAuthenticated }) => {
           >
             <UserCircleIcon className="w-10 h-10 lg:w-12 lg:h-12 text-gray-300" />
             <div className="text-left hidden lg:block">
-              <p className="text-base lg:text-lg font-semibold">
-                {userName}
-              </p>
-              <p className="text-sm lg:text-base text-blue-300">
-                {userRole}
-              </p>
+              <p className="text-base lg:text-lg font-semibold">{userName}</p>
+              <p className="text-sm lg:text-base text-blue-300">{userRole}</p>
             </div>
           </button>
           {dropdownOpen && (
@@ -82,7 +85,8 @@ const Navbar = ({ setIsAuthenticated }) => {
                 <CogIcon className="w-6 h-6 lg:w-7 lg:h-7 mr-3" /> My Account
               </button>
               <button className="w-full flex items-center px-5 py-4 lg:py-5 hover:bg-blue-700 transition">
-                <KeyIcon className="w-6 h-6 lg:w-7 lg:h-7 mr-3" /> Reset Password
+                <KeyIcon className="w-6 h-6 lg:w-7 lg:h-7 mr-3" /> Reset
+                Password
               </button>
               <button
                 className="w-full flex items-center px-5 py-4 lg:py-5 text-red-500 hover:bg-red-700 transition"

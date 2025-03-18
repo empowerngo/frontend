@@ -1,8 +1,11 @@
 import { useState } from "react";
 import Joi from "joi";
 import { handleForm10BERequest } from "../../api/masterApi";
+import { useSelector } from "react-redux";
+import Decrypt from "../../Decrypt";
 
 const Form10BE = () => {
+  const encryptedUserData = useSelector((state) => state.userData);
   const currentYear = new Date().getFullYear();
   const financialYears = Array.from({ length: 5 }, (_, i) => {
     const startYear = currentYear - i;
@@ -34,7 +37,7 @@ const Form10BE = () => {
 
   const handleDownloadReport = async () => {
     const { startDate, endDate } = getStartAndEndDates(selectedFinancialYear);
-    const userData = localStorage.getItem("user");
+    const userData = Decrypt(encryptedUserData);
     const parsedUser = JSON.parse(userData);
 
     const requestData = {
@@ -82,28 +85,31 @@ const Form10BE = () => {
   };
 
   return (
-    <div className="w-full mt-16 mx-auto p-6 bg-gray-100 rounded-lg shadow-md">
+    <div className="mt-16 mx-auto p-6 bg-gray-100 rounded-lg shadow-md flex flex-col items-center">
       <label className="block text-lg font-semibold mb-2">
         Select Financial Year
       </label>
-      <select
-        className="p-2 w-[400px] border border-gray-300 rounded-md text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
-        value={selectedFinancialYear}
-        onChange={(e) => setSelectedFinancialYear(e.target.value)}
-      >
-        {financialYears.map((year) => (
-          <option key={year} value={year}>
-            {year}
-          </option>
-        ))}
-      </select>
 
-      <button
-        onClick={handleDownloadReport}
-        className="mt-4 bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition ml-24"
-      >
-        Generate Report
-      </button>
+      <div className="flex flex-row justify-center align-middle gap-4 mt-5">
+        <select
+          className="p-2 w-[400px] border border-gray-300 rounded-md text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={selectedFinancialYear}
+          onChange={(e) => setSelectedFinancialYear(e.target.value)}
+        >
+          {financialYears.map((year) => (
+            <option key={year} value={year}>
+              {year}
+            </option>
+          ))}
+        </select>
+
+        <button
+          onClick={handleDownloadReport}
+          className=" bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition"
+        >
+          Generate Report
+        </button>
+      </div>
     </div>
   );
 };

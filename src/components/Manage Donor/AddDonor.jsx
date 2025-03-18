@@ -19,6 +19,8 @@ import renderInputField from "../CustomInputField";
 import { handleDonorRequest } from "../../api/masterApi";
 import { validateField } from "./validation";
 import Loading from "../LoadingSpinner";
+import { useSelector } from "react-redux";
+import Decrypt from "../../Decrypt";
 
 // const DonorForm = () => {
 //   const [loading, setLoading] = useState(false);
@@ -45,6 +47,7 @@ const DonorForm = () => {
   const [cityData, setCityData] = useState([]);
   const selectedCountry = watch("donorCountry");
   const selectedState = watch("donorState");
+  const encryptedUserData = useSelector((state) => state.userData);
 
   const countryData = Country.getAllCountries().map((country) => ({
     value: country.isoCode,
@@ -88,7 +91,7 @@ const DonorForm = () => {
       console.log("Submitting form...");
       setLoading(true);
 
-      const userData = JSON.parse(localStorage.getItem("user"));
+      const userData = JSON.parse(Decrypt(encryptedUserData));
       if (!userData?.NGO_ID) {
         console.log("NGO_ID not found");
         toast.error("NGO_ID not found. Please login again.");
@@ -254,26 +257,27 @@ const DonorForm = () => {
             FaBriefcase
           )}
           {renderInputField(
-    register,
-    errors,
-    "Donor Type",
-    "donorType",
-    validateField("donorType"),
-    "select",
-    "Select Donor Type",
-    FaBriefcase,
-    {
-        options: [
-            { value: "Individual", displayValue: "Individual" },
-            { value: "Corporate", displayValue: "Corporate" },
-            { value: "Group", displayValue: "Group" },
-            { value: "NGO", displayValue: "NGO" },
-        ],
-    },
-    { // Add this object to pass register options
-        defaultValue: "Individual"
-    }
-)}
+            register,
+            errors,
+            "Donor Type",
+            "donorType",
+            validateField("donorType"),
+            "select",
+            "Select Donor Type",
+            FaBriefcase,
+            {
+              options: [
+                { value: "Individual", displayValue: "Individual" },
+                { value: "Corporate", displayValue: "Corporate" },
+                { value: "Group", displayValue: "Group" },
+                { value: "NGO", displayValue: "NGO" },
+              ],
+            },
+            {
+              // Add this object to pass register options
+              defaultValue: "Individual",
+            }
+          )}
         </div>
         <div className="flex justify-center md:justify-end">
           {/* <CustomButton type="submit" disabled={loading}>

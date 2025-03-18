@@ -1,5 +1,7 @@
-export default function DonationReceipt({ receiptData }) {
-  const userData = localStorage.getItem("user");
+import Decrypt from "../../Decrypt";
+
+export default function DonationReceipt({ receiptData, encryptedUserData }) {
+  const userData = Decrypt(encryptedUserData);
   let parsedData = JSON.parse(userData);
 
   const formatDate = (isoDateString) => {

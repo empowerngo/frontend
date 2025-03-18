@@ -1,13 +1,15 @@
-import axios from "axios";
 import api from "./api";
+import { setUserData } from "../store";
+import Decrypt from "../Decrypt";
 
-export const loginUser = async (credentials) => {
+export const loginUser = async (credentials, dispatch) => {
   try {
     const response = await api.post("/userSignIn", credentials);
     const { token, user } = response.data.payload;
     console.log(response.data.payload);
     localStorage.setItem("authToken", token);
-    localStorage.setItem("user", JSON.stringify(user));
+    // localStorage.setItem("user", JSON.stringify(user));
+    dispatch(setUserData(JSON.stringify(user)));
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
@@ -96,7 +98,6 @@ export const getPurposes = async (ngoID) => {
     const response = await api.post("/managePurpose", {
       reqType: "g",
       ngoID,
-      
     });
     return response.data.payload || [];
   } catch (error) {
@@ -278,9 +279,9 @@ export const importFile = async (csvData, ngoId, donationType) => {
   }
 };
 
-export const getStatement = async () => {
+export const getStatement = async (encryptedUserData) => {
   try {
-    const NGO_ID = localStorage.getItem("user");
+    const NGO_ID = Decrypt(encryptedUserData);
     const parsedData = JSON.parse(NGO_ID);
 
     const requestData = { ngoID: parsedData.NGO_ID.toString() };
@@ -291,10 +292,9 @@ export const getStatement = async () => {
     throw error.response?.data || error.message;
   }
 };
-export const retrieveDonations = async () => {
+export const retrieveDonations = async (encryptedUserData) => {
   try {
-    const NGO_ID = localStorage.getItem("user");
-    const parsedData = JSON.parse(NGO_ID);
+    const parsedData = JSON.parse(encryptedUserData);
 
     const requestData = { ngoID: parsedData.NGO_ID.toString() };
     const response = await api.post("/retrieveDonations", requestData);
@@ -372,6 +372,28 @@ export const handleForm10BERequest = async (formData) => {
     return response.data.payload;
   } catch (error) {
     console.error("Error handling NGO request:", error);
+    throw error.response?.data || error.message;
+  }
+};
+
+export const retrieveDashboard = async (encryptedUserData) => {
+  try {
+    const parsedData = JSON.parse(encryptedUserData);
+
+    const requestData = {
+      roleCode: parsedData.ROLE_CODE,
+      startYear: 2024,
+      endYear: 2025,
+    };
+
+    if (parsedData.ROLE_CODE === 2) {
+      requestData.ngoID = parsedData.NGO_ID.toString();
+    }
+
+    const response = await api.post("/retrieveDashBoardData", requestData);
+    console.log(response.data.payload);
+    return response.data.payload;
+  } catch (error) {
     throw error.response?.data || error.message;
   }
 };
