@@ -45,8 +45,7 @@ export default function DonationReceipt({ receiptData }) {
                   `PAN No. ${parsedData.NGO_PAN}`,
                   `12A - ${parsedData.NGO_12A_NUMBER}`,
                   `80G - ${parsedData.NGO_80G_NUMBER}`,
-                  `REG No. - ${parsedData.NGO_REG_NUMBER}`,
-                  `Email: ${parsedData.EMAIL || "Not Available"}`,
+                  `REG No. - ${parsedData.NGO_REG_NUMBER}`                 
                 ].map((text, index) => (
                   <div key={index} className="flex items-center space-x-2">
                     <svg
@@ -159,7 +158,8 @@ export default function DonationReceipt({ receiptData }) {
                 Address - {parsedData.NGO_ADDRESS}
               </p>
               <p className="text-gray-700 font-medium">
-                Contact No. - {parsedData.CONTACT_NUMBER}
+                Contact No. - {parsedData.CONTACT_NUMBER} &nbsp;
+                Email ID - {parsedData.EMAIL || "Not Available"}
               </p>
             </div>
           </div>
