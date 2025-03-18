@@ -43,8 +43,8 @@ const DonorForm = () => {
   const [loading, setLoading] = useState(false);
   const [stateData, setStateData] = useState([]);
   const [cityData, setCityData] = useState([]);
-  const selectedCountry = watch("ngoCountry");
-  const selectedState = watch("ngoState");
+  const selectedCountry = watch("donorCountry");
+  const selectedState = watch("donorState");
 
   const countryData = Country.getAllCountries().map((country) => ({
     value: country.isoCode,
@@ -60,7 +60,7 @@ const DonorForm = () => {
         displayValue: state.name,
       }));
       setStateData(states);
-      setValue("ngoState", ""); // Reset state selection
+      setValue("donorState", ""); // Reset state selection
       setCityData([]); // Reset cities
     } else {
       setStateData([]);
@@ -77,7 +77,7 @@ const DonorForm = () => {
         })
       );
       setCityData(cities);
-      setValue("ngoCity", ""); // Reset city selection
+      setValue("donorCity", ""); // Reset city selection
     } else {
       setCityData([]);
     }
@@ -172,30 +172,32 @@ const DonorForm = () => {
             register,
             errors,
             "Country",
-            "ngoCountry",
-            validateField("ngoCountry"),
+            "donorCountry",
+            validateField("donorCountry"),
             "select", // ✅ Changed from "text" to "select"
             "Select Country",
             FaGlobe,
-            { options: countryData } // ✅ Pass the fetched country list as dropdown options
+            { options: countryData }, // ✅ Pass the fetched country list as dropdown options
+            { defaultValue: "India" }
           )}
           {renderInputField(
             register,
             errors,
             "State",
-            "ngoState",
-            validateField("ngoState"),
+            "donorState",
+            validateField("donorState"),
             "select",
             "Enter State",
             FaGlobe,
-            { options: stateData }
+            { options: stateData },
+            { defaultValue: "Maharashtra" }
           )}{" "}
           {renderInputField(
             register,
             errors,
             "City",
-            "ngoCity",
-            validateField("ngoCity"),
+            "donorCity",
+            validateField("donorCity"),
             "select",
             "Enter City",
             FaCity,
@@ -252,23 +254,26 @@ const DonorForm = () => {
             FaBriefcase
           )}
           {renderInputField(
-            register,
-            errors,
-            "Donor Type",
-            "donorType",
-            validateField("donorType"), // Use validateField only
-            "select",
-            "Select Donor Type",
-            FaBriefcase,
-            {
-              options: [
-                { value: "Individual", displayValue: "Individual" },
-                { value: "Corporate", displayValue: "Corporate" },
-                { value: "Group", displayValue: "Group" },
-                { value: "NGO", displayValue: "NGO" },
-              ],
-            }
-          )}
+    register,
+    errors,
+    "Donor Type",
+    "donorType",
+    validateField("donorType"),
+    "select",
+    "Select Donor Type",
+    FaBriefcase,
+    {
+        options: [
+            { value: "Individual", displayValue: "Individual" },
+            { value: "Corporate", displayValue: "Corporate" },
+            { value: "Group", displayValue: "Group" },
+            { value: "NGO", displayValue: "NGO" },
+        ],
+    },
+    { // Add this object to pass register options
+        defaultValue: "Individual"
+    }
+)}
         </div>
         <div className="flex justify-center md:justify-end">
           {/* <CustomButton type="submit" disabled={loading}>
