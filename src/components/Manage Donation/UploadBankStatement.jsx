@@ -74,8 +74,8 @@ const UploadBankStatement = forwardRef((props, ref) => {
             amount: row["Amount"] ? row["Amount"].trim() : "",
           }));
 
-          getStatementfromServer();
           importFile(data, parsedData.NGO_ID, donationType);
+
           console.log("Parsed CSV Data:", data);
         },
         error: (error) => {
@@ -84,6 +84,8 @@ const UploadBankStatement = forwardRef((props, ref) => {
         },
       });
     };
+
+    getStatementfromServer();
     reader.readAsText(file);
   };
 

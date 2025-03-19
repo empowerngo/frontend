@@ -23,6 +23,7 @@ const PaymentDetails = ({
   const [allDonars, setallDonars] = useState([]);
   const [selectedDonar, setSelectedDonar] = useState("");
   const encryptedUserData = useSelector((state) => state.userData);
+  const [SelectedDonarID, setSelectedDonarID] = useState("");
 
   const userData = Decrypt(encryptedUserData);
   let parsedData = JSON.parse(userData);
@@ -53,6 +54,8 @@ const PaymentDetails = ({
         donationDate: selectedTransaction?.txnDate
           ? convertDate(selectedTransaction.txnDate)
           : "",
+        type: "E-Transfer",
+        transactionID: selectedTransaction?.transactionID || "",
       }));
 
       if (selectedTransaction?.description) {
@@ -124,11 +127,14 @@ const PaymentDetails = ({
     setFormData({
       amount: "",
       bank: "",
-      type: "E-Transfer",
+      type: "",
       purpose: "",
       project: "",
       donationDate: "",
       note: "",
+      transactionID: "",
+      Fname: "",
+      Lname: "",
     });
     setSelectedRow(null);
     setSearchTerm("");
@@ -181,6 +187,7 @@ const PaymentDetails = ({
     if (selectedRow === donor) {
       handleCancel();
     } else {
+      setSelectedDonarID(donor.donorID);
       setSelectedRow(donor);
       setSelectedDonar(donor.donorFName + " " + donor.donorLName);
       setShowForm(true);
@@ -203,11 +210,14 @@ const PaymentDetails = ({
     setFormData({
       amount: "",
       bank: "",
-      type: "E-Transfer",
+      type: "",
       purpose: "",
       project: "",
       donationDate: "",
       note: "",
+      transactionID: "",
+      Fname: "",
+      Lname: "",
     });
   };
 
@@ -216,14 +226,11 @@ const PaymentDetails = ({
     const parsedData = JSON.parse(NGO_ID);
     const { amount, bank, type, purpose, project, donationDate, note } =
       formData;
-    console.log(selectedDonationTable);
-    console.log(selectedRow);
+    console.log(selectedDonationTable, "editTable");
+    console.log(selectedRow, "transaction");
 
     const data = {
       ngoID: parsedData.NGO_ID.toString(),
-      donorID: selectedDonationTable
-        ? selectedDonationTable.donorID
-        : selectedRow.donorID,
       amount,
       bank,
       type,
@@ -249,6 +256,14 @@ const PaymentDetails = ({
     if (reqType === "u") {
       data.donationID = selectedDonationTable.donationID;
     }
+    if (SelectedDonarID) {
+      console.log(SelectedDonarID);
+      data.donorID = SelectedDonarID;
+    } else {
+      data.donorID = selectedDonationTable
+        ? selectedDonationTable.donorID
+        : selectedRow.donorID;
+    }
 
     console.log(data);
 
@@ -256,6 +271,7 @@ const PaymentDetails = ({
       .then((response) => {
         console.log("Success:", response);
         if (onSubmit) {
+          setSelectedDonar("");
           onSubmit();
         }
         resetForm();
@@ -330,11 +346,14 @@ const PaymentDetails = ({
                 setFormData({
                   amount: "",
                   bank: "",
-                  type: "E-Transfer",
+                  type: "",
                   purpose: "",
                   project: "",
                   donationDate: "",
                   note: "",
+                  transactionID: "",
+                  Fname: "",
+                  Lname: "",
                 });
                 setSelectedRow(null);
                 setSearchTerm("");
@@ -461,7 +480,7 @@ const PaymentDetails = ({
               <input
                 type="text"
                 name="amount"
-                value={selectedDonar}
+                value={selectedDonar || `${formData.Fname} ${formData.Lname}`}
                 disabled
                 className="border p-2 rounded w-full"
                 onChange={handleChange}
@@ -488,38 +507,6 @@ const PaymentDetails = ({
                 onChange={handleChange}
               />
             </div>
-            {selectedTransaction && (
-              <div>
-                <label className="block">Transaction ID</label>
-                <input
-                  type="text"
-                  name="bank"
-                  value={
-                    formData.transactionID
-                      ? formData.transactionID
-                      : selectedTransaction.transactionID
-                  }
-                  className="border p-2 rounded w-full"
-                  onChange={handleChange}
-                />
-              </div>
-            )}
-            {FormData.transactionID && (
-              <div>
-                <label className="block">Transaction ID</label>
-                <input
-                  type="text"
-                  name="bank"
-                  value={
-                    formData.transactionID
-                      ? formData.transactionID
-                      : selectedTransaction.transactionID
-                  }
-                  className="border p-2 rounded w-full"
-                  onChange={handleChange}
-                />
-              </div>
-            )}
             <div>
               <label className="block">Type</label>
               <select
@@ -528,14 +515,49 @@ const PaymentDetails = ({
                 className="border p-2 rounded w-full"
                 onChange={handleChange}
               >
-                <option value="">Select Type</option>
-                <option value="Cash">Cash</option>
-                <option value="E-Transfer">E-Transfer</option>
-                {/* <option value="PhonePe">PhonePe</option> */}
-                <option value="InKind">InKind</option>
-                <option value="Cheque">Cheque</option>
+                {selectedTransaction ? (
+                  <>
+                    <option value="E-Transfer">E-Transfer</option>
+                    <option value="Cheque">Cheque</option>
+                  </>
+                ) : (
+                  <>
+                    <option value="">Select Type</option>
+                    <option value="Cash">Cash</option>
+                    <option value="E-Transfer">E-Transfer</option>
+                    <option value="InKind">InKind</option>
+                    <option value="Cheque">Cheque</option>
+                  </>
+                )}
               </select>
             </div>
+            {selectedTransaction ? (
+              <div>
+                <label className="block">Transaction ID</label>
+                <input
+                  type="text"
+                  name="transactionID"
+                  value={formData.transactionID}
+                  className="border p-2 rounded w-full"
+                  onChange={handleChange}
+                />
+              </div>
+            ) : (
+              (formData.type === "E-Transfer" ||
+                formData.type === "Cheque") && (
+                <div>
+                  <label className="block">Transaction ID</label>
+                  <input
+                    type="text"
+                    name="transactionID"
+                    value={formData.transactionID || ""}
+                    className="border p-2 rounded w-full"
+                    onChange={handleChange}
+                  />
+                </div>
+              )
+            )}
+
             <div>
               <label className="block">Project</label>
               <select

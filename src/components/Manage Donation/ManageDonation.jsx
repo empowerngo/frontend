@@ -15,12 +15,14 @@ const ManageDonation = () => {
   const [formData, setFormData] = useState({
     amount: "",
     bank: "",
-    type: "E-Transfer",
+    type: "",
     purpose: "",
     project: "",
     donationDate: "",
     note: "",
     transactionID: "",
+    Fname: "",
+    Lname: "",
   });
   const [showForm, setShowForm] = useState(false);
   const userData = Decrypt(encryptedUserData);

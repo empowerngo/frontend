@@ -91,10 +91,12 @@ const DonationTable = forwardRef((props, ref) => {
   }));
 
   const debouncedSearch = debounce((term) => {
+    console.log(donors);
     const filtered = donors.filter(
       (donor) =>
         donor.donorFName.toLowerCase().includes(term.toLowerCase()) ||
         donor.donorLName.toLowerCase().includes(term.toLowerCase()) ||
+        donor.receiptNumber.includes(term) ||
         donor.donorMobile.includes(term) ||
         donor.donorPAN.includes(term)
     );
@@ -105,47 +107,6 @@ const DonationTable = forwardRef((props, ref) => {
         : [{ donorFName: "No donor found", donorMobile: "-", donorPAN: "-" }]
     );
   }, 300);
-
-  const convertDate = (dateStr) => {
-    if (!dateStr) return "";
-
-    console.log("Original Date String:", dateStr);
-
-    const isoDateRegex = /^\d{4}-\d{2}-\d{2}$/;
-    if (isoDateRegex.test(dateStr)) {
-      console.log("Input is already in YYYY-MM-DD format.");
-      return dateStr;
-    }
-
-    const parts = dateStr.split("/");
-
-    if (parts.length !== 3) {
-      console.error(
-        "Invalid date format. Expected 'DD/MM/YYYY' or 'DD/MM/YY'."
-      );
-      return "";
-    }
-
-    const [day, month, year] = parts;
-
-    if (isNaN(day) || isNaN(month) || isNaN(year)) {
-      console.error(
-        "Invalid date components. Day, month, and year must be numeric."
-      );
-      return "";
-    }
-
-    const fullYear = year.length === 2 ? `20${year}` : year;
-
-    console.log(
-      `Converted Date: ${fullYear}-${month.padStart(2, "0")}-${day.padStart(
-        2,
-        "0"
-      )}`
-    );
-
-    return `${fullYear}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
-  };
 
   const EditRow = (donation, i) => {
     if (props.selectedTransaction) {
@@ -170,6 +131,8 @@ const DonationTable = forwardRef((props, ref) => {
       transactionID,
     } = donation;
     props.setFormData({
+      Fname: donation.donorFName,
+      Lname: donation.donorLName,
       amount,
       bank,
       type,
@@ -500,11 +463,30 @@ const DonationTable = forwardRef((props, ref) => {
         <div className="flex gap-2">
           <input
             type="text"
-            placeholder="Keyword (Name or Mobile No.)"
+            placeholder="Keyword (Name, Receipt No, Pan or Mobile No.)"
             className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              handlePageChange(1);
+              setSearchTerm(e.target.value);
+            }}
           />
+          <button
+            ref={buttonRef}
+            onClick={() => setSearchTerm("")}
+            className="px-4 py-2 bg-red-700 text-white hover:bg-blue-800 rounded-lg disabled:bg-gray-100 disabled:text-gray-400 transition"
+            aria-label="Next Page"
+          >
+            Clear
+          </button>
+          {/* <button
+            ref={buttonRef}
+            onClick={() => getDonationfromServer()}
+            className="px-4 py-2 bg-blue-700 text-white hover:bg-blue-800 rounded-lg disabled:bg-gray-100 disabled:text-gray-400 transition"
+            aria-label="Next Page"
+          >
+            Refresh
+          </button> */}
         </div>
       </div>
       <TableContainer component={Paper} className="mt-4 shadow-md rounded-lg">
@@ -555,7 +537,7 @@ const DonationTable = forwardRef((props, ref) => {
           <TableBody>
             {currentRows.map((donation, index) => (
               <TableRow key={index} className="hover:bg-gray-50 transition">
-                <TableCell>{index + 1}</TableCell>
+                <TableCell>{indexOfFirstRow + index + 1}</TableCell>
                 <TableCell>{donation.receiptNumber}</TableCell>
                 <TableCell>{formatDate(donation.donationDate)}</TableCell>
                 <TableCell>
