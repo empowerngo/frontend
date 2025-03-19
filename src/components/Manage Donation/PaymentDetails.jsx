@@ -206,6 +206,7 @@ const PaymentDetails = ({
 
   const handleCancel = () => {
     setShowForm(false);
+    resetForm();
     setSelectedRow(null);
     setFormData({
       amount: "",
@@ -272,6 +273,7 @@ const PaymentDetails = ({
         console.log("Success:", response);
         if (onSubmit) {
           setSelectedDonar("");
+          resetForm();
           onSubmit();
         }
         resetForm();
