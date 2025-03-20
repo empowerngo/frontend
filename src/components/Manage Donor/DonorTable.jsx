@@ -184,6 +184,8 @@ const DonorTable = () => {
       <Typography variant="h4" align="center" gutterBottom>
         Donor List
       </Typography>
+  <div className="w-full">
+    <div className="flex gap-2">
       <TextField
         label="Search by Name..."
         variant="outlined"
@@ -202,6 +204,8 @@ const DonorTable = () => {
           Clear
         </Button>
       </div>
+  </div>
+      
       {loading ? (
         <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
           <CircularProgress />

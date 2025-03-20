@@ -104,7 +104,7 @@ const StaffTable = () => {
       <TableContainer>
         <Table>
           <TableHead>
-            <TableRow>
+            <TableRow className="bg-gray-100">
               {[
                 "Name",
                 "Email",
