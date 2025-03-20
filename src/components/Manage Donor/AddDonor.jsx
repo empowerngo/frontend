@@ -22,15 +22,6 @@ import Loading from "../LoadingSpinner";
 import { useSelector } from "react-redux";
 import Decrypt from "../../Decrypt";
 
-// const DonorForm = () => {
-//   const [loading, setLoading] = useState(false);
-//   const {
-//     register,
-//     handleSubmit,
-//     formState: { errors },
-//     reset
-//   } = useForm();
-
 const DonorForm = () => {
   const {
     register,
@@ -134,7 +125,9 @@ const DonorForm = () => {
           {renderInputField(
             register,
             errors,
-            "First Name",
+            <>
+              First Name <span style={{ color: "red" }}>*</span>
+            </>, // Add asterisk here
             "donorFName",
             validateField("donorFName"),
             "text",
@@ -154,7 +147,9 @@ const DonorForm = () => {
           {renderInputField(
             register,
             errors,
-            "Last Name",
+            <>
+              Last Name <span style={{ color: "red" }}>*</span>
+            </>,
             "donorLName",
             validateField("donorLName"),
             "text",
@@ -164,7 +159,9 @@ const DonorForm = () => {
           {renderInputField(
             register,
             errors,
-            "Address",
+            <>
+              Address <span style={{ color: "red" }}>*</span>
+            </>,
             "donorAddress",
             validateField("donorAddress"),
             "text",
@@ -174,7 +171,9 @@ const DonorForm = () => {
           {renderInputField(
             register,
             errors,
-            "Country",
+            <>
+              Country <span style={{ color: "red" }}>*</span>
+            </>,
             "donorCountry",
             validateField("donorCountry"),
             "select", // ✅ Changed from "text" to "select"
@@ -186,7 +185,9 @@ const DonorForm = () => {
           {renderInputField(
             register,
             errors,
-            "State",
+            <>
+              State <span style={{ color: "red" }}>*</span>
+            </>,
             "donorState",
             validateField("donorState"),
             "select",
@@ -198,7 +199,9 @@ const DonorForm = () => {
           {renderInputField(
             register,
             errors,
-            "City",
+            <>
+              City <span style={{ color: "red" }}>*</span>
+            </>,
             "donorCity",
             validateField("donorCity"),
             "select",
@@ -209,7 +212,9 @@ const DonorForm = () => {
           {renderInputField(
             register,
             errors,
-            "Pincode",
+            <>
+              Pin Code <span style={{ color: "red" }}>*</span>
+            </>,
             "donorPinCode",
             validateField("donorPinCode"),
             "text",
@@ -249,6 +254,26 @@ const DonorForm = () => {
           {renderInputField(
             register,
             errors,
+            "Adhaar Number",
+            "donorAdhar",
+            validateField("donorAdhar"),
+            "text",
+            "Enter Adhaar number",
+            FaIdCard
+          )}
+          {renderInputField(
+            register,
+            errors,
+            "D.O.B",
+            "donorDOB",
+            validateField("donorDOB"),
+            "date",
+            "Enter D.O.B",
+            FaIdCard
+          )}
+          {renderInputField(
+            register,
+            errors,
             "Profession",
             "donorProfession",
             validateField("donorProfession"),
@@ -259,7 +284,9 @@ const DonorForm = () => {
           {renderInputField(
             register,
             errors,
-            "Donor Type",
+            <>
+              Donor Type <span style={{ color: "red" }}>*</span>
+            </>,
             "donorType",
             validateField("donorType"),
             "select",

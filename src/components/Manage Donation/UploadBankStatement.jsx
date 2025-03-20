@@ -9,6 +9,7 @@ import Papa from "papaparse";
 import { importFile, getStatement } from "../../api/masterApi";
 import { useSelector } from "react-redux";
 import Decrypt from "../../Decrypt";
+import { AiOutlineInfoCircle } from "react-icons/ai"; // Importing info icon
 
 const UploadBankStatement = forwardRef((props, ref) => {
   const buttonRef = useRef(null);
@@ -20,7 +21,7 @@ const UploadBankStatement = forwardRef((props, ref) => {
   const rowsPerPage = 5;
   const encryptedUserData = useSelector((state) => state.userData);
   const userData = Decrypt(encryptedUserData);
-
+  const [showInstructions, setShowInstructions] = useState(false);
   const getStatementfromServer = async () => {
     const statement = await getStatement(encryptedUserData);
     setCsvData(statement.payload);
@@ -123,7 +124,7 @@ const UploadBankStatement = forwardRef((props, ref) => {
   return (
     <div className="w-full mx-auto bg-white p-8 rounded-2xl shadow-lg">
       <div className="flex flex-row justify-between items-center w-full mb-4 h-full">
-        {/* Title */}
+        {/* Title with Info Icon */}
         <h2 className="text-2xl font-bold mb-6 text-gray-800 ">
           Upload Bank Statement
         </h2>
@@ -152,6 +153,44 @@ const UploadBankStatement = forwardRef((props, ref) => {
             {!hideContainer ? "Hide" : "Show"}
           </button>
         </div>
+      </div>
+
+      {/* Instruction Popup */}
+      {showInstructions && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h3 className="text-xl font-bold text-gray-800 mb-4">
+              Upload Instructions
+            </h3>
+            <ul className="list-disc list-inside text-gray-700 space-y-2">
+              <li>
+                ✅ Please ensure correct row header as per template file is
+                used.
+              </li>
+              <li>
+                ✅ Please ensure transaction date should be in "YYYY-MM-DD"
+                format.
+              </li>
+              <li>
+                ✅ Please ensure that the amount should be a number and not text
+                in CSV.
+              </li>
+            </ul>
+            <button
+              className="mt-4 w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+              onClick={() => setShowInstructions(false)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+      <div
+        className="flex items-center space-x-1 cursor-pointer text-blue-600 hover:underline"
+        onClick={() => setShowInstructions(true)}
+      >
+        <AiOutlineInfoCircle className="text-xl" />
+        <span className="text-sm font-medium">Instructions to upload file</span>
       </div>
       {!hideContainer && (
         <>

@@ -32,6 +32,10 @@ import Swal from "sweetalert2";
 import { donorTypes } from "../../utils/constants";
 import { useSelector } from "react-redux";
 import Decrypt from "../../Decrypt";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs from "dayjs";
 
 const DonorTable = () => {
   const [donorList, setDonorList] = useState([]);
@@ -184,28 +188,28 @@ const DonorTable = () => {
       <Typography variant="h4" align="center" gutterBottom>
         Donor List
       </Typography>
-  <div className="w-full">
-    <div className="flex gap-2">
-      <TextField
-        label="Search by Name..."
-        variant="outlined"
-        size="small"
-        fullWidth
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="mb-4"
-      />
-       <Button
-          variant="contained"
-          color="secondary"
-          onClick={() => setSearchTerm("")}
-          disabled={!searchTerm}
-        >
-          Clear
-        </Button>
+      <div className="w-full">
+        <div className="flex gap-2">
+          <TextField
+            label="Search by Name..."
+            variant="outlined"
+            size="small"
+            fullWidth
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="mb-4"
+          />
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => setSearchTerm("")}
+            disabled={!searchTerm}
+          >
+            Clear
+          </Button>
+        </div>
       </div>
-  </div>
-      
+
       {loading ? (
         <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
           <CircularProgress />
@@ -215,11 +219,21 @@ const DonorTable = () => {
           <Table>
             <TableHead>
               <TableRow className="bg-gray-100">
-                <TableCell align="center"><b>Name</b></TableCell>
-                <TableCell align="center"><b>Email</b></TableCell>
-                <TableCell align="center"><b>Mobile</b></TableCell>
-                <TableCell align="center"><b>Donor Type</b></TableCell>
-                <TableCell align="center"><b>Action</b></TableCell>
+                <TableCell align="center">
+                  <b>Name</b>
+                </TableCell>
+                <TableCell align="center">
+                  <b>Email</b>
+                </TableCell>
+                <TableCell align="center">
+                  <b>Mobile</b>
+                </TableCell>
+                <TableCell align="center">
+                  <b>Donor Type</b>
+                </TableCell>
+                <TableCell align="center">
+                  <b>Action</b>
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -353,6 +367,18 @@ const DonorTable = () => {
                   <TextField
                     fullWidth
                     margin="dense"
+                    label="ADHAAR"
+                    name="donorAdhar"
+                    value={selectedDonor.donorAdhar || ""}
+                    onChange={handleChange}
+                    variant="outlined"
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    margin="dense"
                     label="Email"
                     name="donorEmail"
                     value={selectedDonor.donorEmail || ""}
@@ -447,6 +473,29 @@ const DonorTable = () => {
                       ))}
                     </Select>
                   </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <FormControl fullWidth margin="dense">
+                      <DatePicker
+                        label="Donor DOB"
+                        value={
+                          selectedDonor.donorDOB
+                            ? dayjs(selectedDonor.donorDOB)
+                            : null
+                        }
+                        onChange={(newValue) => {
+                          handleChange({
+                            target: {
+                              name: "donorDOB",
+                              value: newValue ? newValue.toISOString() : null,
+                            },
+                          });
+                        }}
+                        renderInput={(params) => <TextField {...params} />} // Use the default TextField or your custom one
+                      />
+                    </FormControl>
+                  </LocalizationProvider>
                 </Grid>
               </Grid>
               {modalLoading && (
@@ -543,6 +592,16 @@ const DonorTable = () => {
                   <Grid item xs={12}>
                     <Typography variant="subtitle1">
                       <strong>PAN:</strong> {selectedDonor.donorPAN}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography variant="subtitle1">
+                      <strong>ADHAAR:</strong> {selectedDonor.donorAdhar}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography variant="subtitle1">
+                      <strong>D.O.B:</strong> {selectedDonor.donorDOB}
                     </Typography>
                   </Grid>
                   <Grid item xs={12}>
