@@ -493,26 +493,26 @@ const DonationTable = forwardRef((props, ref) => {
         <Table>
           <TableHead>
             <TableRow className="bg-gray-100">
-              <TableCell className="font-semibold text-gray-700">SI</TableCell>
-              <TableCell className="font-semibold text-gray-700">
-                Receipt No.
+              <TableCell align="center" className="font-semibold text-gray-700"><b>SI</b></TableCell>
+              <TableCell  align="center" className="font-semibold text-gray-700">
+              <b>Receipt No.</b>
               </TableCell>
-              <TableCell className="font-semibold text-gray-700">
-                Date
+              <TableCell align="center" className="font-semibold text-gray-700">
+                <b>Date</b>
               </TableCell>
 
-              <TableCell className="font-semibold text-gray-700">
-                Name
+              <TableCell align="center" className="font-semibold text-gray-700">
+              <b>Name</b>
               </TableCell>
-              <TableCell className="font-semibold text-gray-700">
-                Mobile
+              <TableCell align="center" className="font-semibold text-gray-700">
+              <b>Mobile</b>
               </TableCell>
-              <TableCell className="font-semibold text-gray-700">PAN</TableCell>
-              <TableCell className="font-semibold text-gray-700">
-                Amount
+              <TableCell align="center" className="font-semibold text-gray-700"><b>PAN</b></TableCell>
+              <TableCell align="center" className="font-semibold text-gray-700">
+              <b>Amount</b>
               </TableCell>
-              <TableCell className="font-semibold text-gray-700">
-                Receipt
+              <TableCell align="center" className="font-semibold text-gray-700">
+              <b>Receipt</b>
               </TableCell>
               {/* {parsedData.ROLE_CODE === 4 || 3 ? (
                 ""
@@ -527,8 +527,8 @@ const DonationTable = forwardRef((props, ref) => {
                 ""
               ) : (
                 <>
-                  <TableCell className="font-semibold text-gray-700">
-                    Action
+                  <TableCell align="center" className="font-semibold text-gray-700">
+                  <b>Action</b>
                   </TableCell>
                 </>
               )}
