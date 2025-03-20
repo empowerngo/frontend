@@ -193,7 +193,15 @@ const DonorTable = () => {
         onChange={(e) => setSearchTerm(e.target.value)}
         className="mb-4"
       />
-
+       <Button
+          variant="contained"
+          color="secondary"
+          onClick={() => setSearchTerm("")}
+          disabled={!searchTerm}
+        >
+          Clear
+        </Button>
+      </div>
       {loading ? (
         <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
           <CircularProgress />
@@ -202,12 +210,12 @@ const DonorTable = () => {
         <TableContainer>
           <Table>
             <TableHead>
-              <TableRow>
-                <TableCell align="center">Name</TableCell>
-                <TableCell align="center">Email</TableCell>
-                <TableCell align="center">Mobile</TableCell>
-                <TableCell align="center">Donor Type</TableCell>
-                <TableCell align="center">Action</TableCell>
+              <TableRow className="bg-gray-100">
+                <TableCell align="center"><b>Name</b></TableCell>
+                <TableCell align="center"><b>Email</b></TableCell>
+                <TableCell align="center"><b>Mobile</b></TableCell>
+                <TableCell align="center"><b>Donor Type</b></TableCell>
+                <TableCell align="center"><b>Action</b></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
