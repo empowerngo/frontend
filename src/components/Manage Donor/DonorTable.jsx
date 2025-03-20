@@ -23,7 +23,7 @@ import {
   InputLabel,
   CircularProgress,
   IconButton,
-  Tooltip,
+  Tooltip,  
 } from "@mui/material";
 import { getDonorData, handleDonorRequest } from "../../api/masterApi";
 import EditIcon from "@mui/icons-material/Edit";
@@ -178,33 +178,41 @@ const DonorTable = () => {
 
   return (
     <Paper className="mt-6 p-6">
-      <Typography variant="h4" align="center" gutterBottom>
-        Donor List
-      </Typography>
-      <TextField
-        label="Search by Name..."
-        variant="outlined"
-        size="small"
-        fullWidth
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="mb-4"
-      />
+      <h2 className="text-xl font-bold mb-4 text-gray-800">Donor List</h2>
+      <div className="flex items-center gap-2 mb-4"></div>
+      <div className="flex items-center gap-2 mb-4">
+        <TextField
+          label="Search by name..."
+          variant="outlined"
+          size="small"
+          fullWidth
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={() => setSearchTerm("")}
+          disabled={!searchTerm}
+        >
+          Clear
+        </Button>
+      </div>
 
       {loading ? (
         <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
           <CircularProgress />
         </Box>
       ) : (
-        <TableContainer>
+        <TableContainer >
           <Table>
             <TableHead>
-              <TableRow>
-                <TableCell align="center">Name</TableCell>
-                <TableCell align="center">Email</TableCell>
-                <TableCell align="center">Mobile</TableCell>
-                <TableCell align="center">Donor Type</TableCell>
-                <TableCell align="center">Action</TableCell>
+              <TableRow className="bg-gray-100">
+                <TableCell align="center"><b>Name</b></TableCell>
+                <TableCell align="center"><b>Email</b></TableCell>
+                <TableCell align="center"><b>Mobile</b></TableCell>
+                <TableCell align="center"><b>Donor Type</b></TableCell>
+                <TableCell align="center"><b>Action</b></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>

@@ -52,10 +52,12 @@ import html2pdf from "html2pdf.js";
   };
 
   const getDonationfromServer = async () => {
+    
     const statement = await retrieveDonations();
     setDonors(statement.payload);
     setFilteredDonors(statement.payload);
     console.log(statement, "statement");
+    
     return statement;
   };
 
@@ -71,7 +73,9 @@ import html2pdf from "html2pdf.js";
     debouncedSearch(searchTerm);
   }, [searchTerm, donors]); // Also re-run if donations update
   useEffect(() => {
+ 
     getDonationfromServer();
+    
   }, []);
 
   useImperativeHandle(ref, () => ({
@@ -94,7 +98,7 @@ import html2pdf from "html2pdf.js";
     setFilteredDonors(
       filtered.length
         ? filtered
-        : [{ donorFName: "No donor found", donorMobile: "-", donorPAN: "-" }]
+        : [{ donorFName: "No donation found", donorMobile: "-", donorPAN: "-" }]
     );
   }, 300);
 
@@ -475,6 +479,7 @@ import html2pdf from "html2pdf.js";
         >
           Refresh
         </button>
+        
       </div>
 
       <div className="w-full">
@@ -492,26 +497,26 @@ import html2pdf from "html2pdf.js";
         <Table>
           <TableHead>
             <TableRow className="bg-gray-100">
-              <TableCell className="font-semibold text-gray-700">SI</TableCell>
-              <TableCell className="font-semibold text-gray-700">
-                Receipt No.
+              <TableCell align="center" className="font-semibold text-gray-700"><b>SI</b></TableCell>
+              <TableCell  align="center" className="font-semibold text-gray-700">
+              <b>Receipt No.</b>
               </TableCell>
-              <TableCell className="font-semibold text-gray-700">
-                Date
+              <TableCell align="center" className="font-semibold text-gray-700">
+                <b>Date</b>
               </TableCell>
 
-              <TableCell className="font-semibold text-gray-700">
-                Name
+              <TableCell align="center" className="font-semibold text-gray-700">
+              <b>Name</b>
               </TableCell>
-              <TableCell className="font-semibold text-gray-700">
-                Mobile
+              <TableCell align="center" className="font-semibold text-gray-700">
+              <b>Mobile</b>
               </TableCell>
-              <TableCell className="font-semibold text-gray-700">PAN</TableCell>
-              <TableCell className="font-semibold text-gray-700">
-                Amount
+              <TableCell align="center" className="font-semibold text-gray-700">PAN</TableCell>
+              <TableCell align="center" className="font-semibold text-gray-700">
+              <b>Amount</b>
               </TableCell>
-              <TableCell className="font-semibold text-gray-700">
-                Receipt
+              <TableCell align="center" className="font-semibold text-gray-700">
+              <b>Receipt</b>
               </TableCell>
               {/* {parsedData.ROLE_CODE === 4 || 3 ? (
                 ""
@@ -526,8 +531,8 @@ import html2pdf from "html2pdf.js";
                 ""
               ) : (
                 <>
-                  <TableCell className="font-semibold text-gray-700">
-                    Action
+                  <TableCell align="center" className="font-semibold text-gray-700">
+                  <b>Action</b>
                   </TableCell>
                 </>
               )}
