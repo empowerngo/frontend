@@ -128,13 +128,20 @@ const PaymentDetails = ({
 
     setLoading(true);
     setTimeout(() => {
-      const filteredDonors = allDonars.filter(
-        (donor) =>
-          donor.donorFName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          donor.donorLName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          donor.donorPAN.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          donor.donorMobile.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      const filteredDonors = allDonars.filter((donor) => {
+        const searchTermLower = searchTerm.toLowerCase();
+        const donorFNameLower = donor.donorFName.toLowerCase();
+        const donorLNameLower = donor.donorLName.toLowerCase();
+        const donorPANLower = donor.donorPAN ? donor.donorPAN.toLowerCase() : ""; // Handle null/undefined
+        const donorMobileLower = donor.donorMobile ? donor.donorMobile.toLowerCase() : ""; // Handle null/undefined
+      
+        return (
+          donorFNameLower.includes(searchTermLower) ||
+          donorLNameLower.includes(searchTermLower) ||
+          donorPANLower.includes(searchTermLower) ||
+          donorMobileLower.includes(searchTermLower)
+        );
+      });
 
       if (filteredDonors.length === 0) {
         setDonors([{ name: "No donor found", mobile: "-", pan: "-" }]);
