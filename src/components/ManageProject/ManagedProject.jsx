@@ -36,7 +36,7 @@ const ManageProjects = () => {
     try {
       const fetchedProjects = await getProjects(ngoID);
       dispatch(setProjects(fetchedProjects));
-      console.log(fetchedProjects);
+      console.log(fetchedProjects, "projects");
       setProjectList(Array.isArray(fetchedProjects) ? fetchedProjects : []);
     } catch (error) {
       console.error("Error fetching projects:", error);
@@ -47,6 +47,7 @@ const ManageProjects = () => {
     if (!ngoID || !projectID) return;
     try {
       const fetchedPurposes = await getPurposes(ngoID, projectID);
+      console.log(fetchPurposes, "purpose");
       setPurposeList(Array.isArray(fetchedPurposes) ? fetchedPurposes : []);
     } catch (error) {
       console.error("Error fetching purposes:", error);

@@ -54,6 +54,7 @@ const DonationTable = forwardRef((props, ref) => {
 
   const totalPages = Math.ceil(filteredDonors.length / rowsPerPage);
   let parsedData = JSON.parse(userData);
+  console.log(parsedData.ROLE_CODE);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -527,7 +528,7 @@ const DonationTable = forwardRef((props, ref) => {
                   </TableCell>
                 </>
               )} */}
-              {parsedData.ROLE_CODE === 4 && 3 ? (
+              {parsedData.ROLE_CODE === 4 || 3 ? (
                 ""
               ) : (
                 <>
@@ -582,7 +583,7 @@ const DonationTable = forwardRef((props, ref) => {
                     <Send />
                   </IconButton>
                 </TableCell>
-                {parsedData.ROLE_CODE === 4 && 3 ? (
+                {parsedData.ROLE_CODE === 4 || 3 ? (
                   ""
                 ) : (
                   <>

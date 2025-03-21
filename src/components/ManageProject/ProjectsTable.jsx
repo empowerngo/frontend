@@ -53,6 +53,8 @@ const ProjectsTable = () => {
     let ngoID = parsedData.NGO_ID;
     try {
       const response = await getPurposes(ngoID);
+      console.log(response);
+      console.log(parsedData);
 
       if (Array.isArray(response)) {
         setProjectList(response);
