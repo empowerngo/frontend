@@ -9,7 +9,7 @@ import Papa from "papaparse";
 import { importFile, getStatement } from "../../api/masterApi";
 import { useSelector } from "react-redux";
 import Decrypt from "../../Decrypt";
-import { AiOutlineInfoCircle } from "react-icons/ai"; // Importing info icon
+import { AiOutlineInfoCircle } from "react-icons/ai";
 
 const UploadBankStatement = forwardRef((props, ref) => {
   const buttonRef = useRef(null);
@@ -66,6 +66,9 @@ const UploadBankStatement = forwardRef((props, ref) => {
         header: true,
         skipEmptyLines: true,
         complete: async (results) => {
+          const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+          console.log(results.data);
+
           const data = results.data.map((row) => ({
             txnDate: row["Txn Date"] ? row["Txn Date"].trim() : "",
             description: row["Description"] ? row["Description"].trim() : "",
@@ -75,8 +78,19 @@ const UploadBankStatement = forwardRef((props, ref) => {
             amount: row["Amount"] ? row["Amount"].trim() : "",
           }));
 
-          importFile(data, parsedData.NGO_ID, donationType);
+          const invalidDates = data.filter(
+            (row) => !row.txnDate || !dateRegex.test(row.txnDate)
+          );
 
+          if (invalidDates.length > 0) {
+            alert(
+              `Error: ${invalidDates.length} transactions have an invalid date format (yyyy-MM-DD).`
+            );
+            setFile(null);
+            console.error("Invalid Dates:", invalidDates);
+            return;
+          }
+          // importFile(data, parsedData.NGO_ID, donationType);
           console.log("Parsed CSV Data:", data);
         },
         error: (error) => {
@@ -174,6 +188,15 @@ const UploadBankStatement = forwardRef((props, ref) => {
               <li>
                 ✅ Please ensure that the amount should be a number and not text
                 in CSV.
+              </li>
+              <li>
+                <a
+                  href="/SampleImport.csv"
+                  download="SampleImport.csv"
+                  className="text-blue-600 hover:underline"
+                >
+                  Download Sample
+                </a>
               </li>
             </ul>
             <button
