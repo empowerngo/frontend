@@ -52,7 +52,7 @@ const AddStaff = ({ onAddOrUpdateStaff, editStaff, setEditStaff }) => {
       try {
         const reqType = "list";
         const ngos = await retrieveNGOList(reqType);
-        console.log("NGO List API Response:", ngos);
+        // console.log("NGO List API Response:", ngos);
         setNgoList(Array.isArray(ngos.payload) ? ngos.payload : []);
       } catch (error) {
         console.error("Error fetching NGO list:", error);

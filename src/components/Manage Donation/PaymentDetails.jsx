@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
-import { getDonorData, handleDonationRequest } from "../../api/masterApi";
-import { useSelector } from "react-redux";
+import {
+  getDonorData,
+  getProjects,
+  handleDonationRequest,
+} from "../../api/masterApi";
+import { useDispatch, useSelector } from "react-redux";
 import Decrypt from "../../Decrypt";
+import { setProjects } from "../../store";
 
 const PaymentDetails = ({
   selectedTransaction,
@@ -23,18 +28,37 @@ const PaymentDetails = ({
   const [allDonars, setallDonars] = useState([]);
   const [selectedDonar, setSelectedDonar] = useState("");
   const encryptedUserData = useSelector((state) => state.userData);
+  const encryptedprojects = useSelector((state) => state.projects);
   const [SelectedDonarID, setSelectedDonarID] = useState("");
+  const dispatch = useDispatch();
 
   const userData = Decrypt(encryptedUserData);
+
   let parsedData = JSON.parse(userData);
+
+  // useEffect(() => {
+  //   if (parsedData?.NGO_ID) {
+  //     fetchProjects(parsedData.NGO_ID);
+  //   }
+  // }, []);
+
+  // const fetchProjects = async (ngoID) => {
+  //   if (!ngoID) return;
+  //   try {
+  //     const fetchedProjects = await getProjects(ngoID);
+  //     dispatch(setProjects(fetchedProjects));
+  //   } catch (error) {
+  //     console.error("Error fetching projects:", error);
+  //   }
+  // };
 
   const fetchDonors = async () => {
     let ngoID = parsedData.NGO_ID;
     try {
       const response = await getDonorData({ ngoID }, "list");
-      console.log("Donor List - ", response);
+      // console.log("Donor List - ", response);
       if (response && Array.isArray(response.payload)) {
-        console.log(response.payload);
+        // console.log(response.payload);
         setallDonars(response.payload);
       }
     } catch (error) {
@@ -46,7 +70,7 @@ const PaymentDetails = ({
   useEffect(() => {
     if (selectedTransaction) {
       setSelectedRow([]);
-      console.log("Selected Transaction:", selectedTransaction);
+      // console.log("Selected Transaction:", selectedTransaction);
       setFormData((prev) => ({
         ...prev,
         amount: selectedTransaction?.amount || "",
@@ -60,7 +84,7 @@ const PaymentDetails = ({
 
       if (selectedTransaction?.description) {
         const extractedUPI = extractUPIDetails(selectedTransaction.description);
-        console.log(extractedUPI);
+        // console.log(extractedUPI);
         setSearchTerm(extractedUPI.name);
         handleSearch();
       }
@@ -69,7 +93,7 @@ const PaymentDetails = ({
 
   useEffect(() => {
     fetchDonors();
-    console.log(parsedData, "user");
+    // console.log(parsedData, "user");
   }, []);
 
   // Trigger search automatically when searchTerm changes
@@ -116,7 +140,7 @@ const PaymentDetails = ({
         setDonors([{ name: "No donor found", mobile: "-", pan: "-" }]);
         // setShowForm(false);
       } else {
-        console.log(filteredDonors);
+        // console.log(filteredDonors);
         setDonors(filteredDonors);
       }
 
@@ -145,11 +169,11 @@ const PaymentDetails = ({
   const convertDate = (dateStr) => {
     if (!dateStr) return "";
 
-    console.log("Original Date String:", dateStr);
+    // console.log("Original Date String:", dateStr);
 
     const isoDateRegex = /^\d{4}-\d{2}-\d{2}$/;
     if (isoDateRegex.test(dateStr)) {
-      console.log("Input is already in YYYY-MM-DD format.");
+      // console.log("Input is already in YYYY-MM-DD format.");
       return dateStr;
     }
 
@@ -173,12 +197,12 @@ const PaymentDetails = ({
 
     const fullYear = year.length === 2 ? `20${year}` : year;
 
-    console.log(
-      `Converted Date: ${fullYear}-${month.padStart(2, "0")}-${day.padStart(
-        2,
-        "0"
-      )}`
-    );
+    // console.log(
+    //   `Converted Date: ${fullYear}-${month.padStart(2, "0")}-${day.padStart(
+    //     2,
+    //     "0"
+    //   )}`
+    // );
 
     return `${fullYear}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
   };
@@ -227,8 +251,8 @@ const PaymentDetails = ({
     const parsedData = JSON.parse(NGO_ID);
     const { amount, bank, type, purpose, project, donationDate, note } =
       formData;
-    console.log(selectedDonationTable, "editTable");
-    console.log(selectedRow, "transaction");
+    // console.log(selectedDonationTable, "editTable");
+    // console.log(selectedRow, "transaction");
 
     const data = {
       ngoID: parsedData.NGO_ID.toString(),
@@ -258,7 +282,7 @@ const PaymentDetails = ({
       data.donationID = selectedDonationTable.donationID;
     }
     if (SelectedDonarID) {
-      console.log(SelectedDonarID);
+      // console.log(SelectedDonarID);
       data.donorID = SelectedDonarID;
     } else {
       data.donorID = selectedDonationTable
@@ -266,11 +290,11 @@ const PaymentDetails = ({
         : selectedRow.donorID;
     }
 
-    console.log(data);
+    // console.log(data);
 
     handleDonationRequest(data, reqType)
       .then((response) => {
-        console.log("Success:", response);
+        // console.log("Success:", response);
         if (onSubmit) {
           setSelectedDonar("");
           resetForm();

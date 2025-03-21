@@ -11,9 +11,9 @@ import {
   TextField,
   Button,
   CircularProgress,
-  IconButton
+  IconButton,
 } from "@mui/material";
-import EditUserForm from "./EditUserForm"; 
+import EditUserForm from "./EditUserForm";
 import { retrieveUserList } from "../../api/masterApi";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
@@ -25,41 +25,39 @@ const StaffTable = () => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [editOpen, setEditOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
 
-  
-    const fetchUserList = async () => {
-      setLoading(true); 
-      try {
-        const response = await retrieveUserList("list");
-        setUserList(response?.payload || []);
-      } catch (err) {
-        console.error("Failed to fetch User data", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    useEffect(() => {
+  const fetchUserList = async () => {
+    setLoading(true);
+    try {
+      const response = await retrieveUserList("list");
+      setUserList(response?.payload || []);
+    } catch (err) {
+      console.error("Failed to fetch User data", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
     fetchUserList();
   }, []);
-
 
   const filteredStaff = useMemo(() => {
     if (!Array.isArray(userList)) {
       return userList; // Or return [], or handle the error appropriately
     }
-  
+
     if (!searchTerm) {
       return userList;
     }
-  
+
     const lowerSearchTerm = searchTerm.toLowerCase();
-  
+
     return userList.filter((staff) => {
       const name = (staff.NAME || "").toLowerCase();
       const email = (staff.EMAIL || "").toLowerCase();
       const contact = (staff.CONTACT_NUMBER || "").toLowerCase();
-  
+
       return (
         name.includes(lowerSearchTerm) ||
         email.includes(lowerSearchTerm) ||
@@ -69,7 +67,7 @@ const StaffTable = () => {
   }, [userList, searchTerm]);
 
   const handleEdit = (staff) => {
-    setSelectedUser(staff); 
+    setSelectedUser(staff);
     setEditOpen(true);
   };
 
@@ -113,7 +111,7 @@ const StaffTable = () => {
                 "NGO Name",
                 "Created by",
                 "Status",
-                "Actions"
+                "Actions",
               ].map((heading) => (
                 <TableCell key={heading}>
                   <b>{heading}</b>
@@ -122,13 +120,13 @@ const StaffTable = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {loading ? ( 
+            {loading ? (
               <TableRow>
                 <TableCell colSpan={8} align="center">
                   <CircularProgress size={24} />
                 </TableCell>
               </TableRow>
-            ) : filteredStaff.length === 0 ? ( 
+            ) : filteredStaff.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={8} align="center">
                   No staff found.
@@ -156,11 +154,11 @@ const StaffTable = () => {
                         Edit
                       </Button> */}
                       <IconButton
-                          color="secondary"
-                          onClick={() => handleEdit(staff)}
-                        >
-                          <EditIcon />
-                        </IconButton>
+                        color="secondary"
+                        onClick={() => handleEdit(staff)}
+                      >
+                        <EditIcon />
+                      </IconButton>
                     </TableCell>
                   </TableRow>
                 ))

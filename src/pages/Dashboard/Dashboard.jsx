@@ -35,10 +35,10 @@ const Dashboard = () => {
   const [Data, setData] = useState(null);
   const encryptedUserData = useSelector((state) => state.userData);
   const userData = JSON.parse(Decrypt(encryptedUserData));
-  console.log(userData);
+  // console.log(userData);
   const getData = async () => {
     const response = await retrieveDashboard(Decrypt(encryptedUserData));
-    console.log(response);
+    // console.log(response);
     setData(response);
   };
 

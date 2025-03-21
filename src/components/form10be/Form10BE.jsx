@@ -54,11 +54,11 @@ const Form10BE = () => {
       return;
     }
 
-    console.log("Sending request:", requestData);
+    // console.log("Sending request:", requestData);
 
     try {
       const response = await handleForm10BERequest(requestData);
-      console.log(response);
+      // console.log(response);
 
       // Decode Base64 string to text
       const csvText = atob(response); // `atob` decodes base64 to text
@@ -78,7 +78,7 @@ const Form10BE = () => {
       URL.revokeObjectURL(url);
       document.body.removeChild(link);
 
-      console.log("Report downloaded successfully!");
+      // console.log("Report downloaded successfully!");
     } catch (error) {
       console.error("Error downloading report:", error);
     }

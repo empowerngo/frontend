@@ -62,7 +62,7 @@ const AddProjectAndPurposeForm = ({
       formData.append("createdBy", createdBy);
       // const reqTypeValue = editItem ? "u" : "s"; // Store the value
       // formData.append("reqType", reqTypeValue);
-      // console.log("reqType Value - ", reqTypeValue); // Log the variable
+      // // console.log("reqType Value - ", reqTypeValue); // Log the variable
 
       if (isProject) {
         formData.append("projectName", data.projectName);
@@ -78,9 +78,11 @@ const AddProjectAndPurposeForm = ({
       }
 
       if (isProject) {
-        await manageProject(formData, "s");
+        console.log(formData);
+        // await manageProject(formData, "s");
       } else {
-        await managePurpose(formData, "s");
+        console.log(formData);
+        // await managePurpose(formData, "s");
       }
 
       Swal.fire({

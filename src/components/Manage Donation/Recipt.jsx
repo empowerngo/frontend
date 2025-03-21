@@ -7,7 +7,7 @@ export default function DonationReceipt({ receiptData, encryptedUserData }) {
   const formatDate = (isoDateString) => {
     if (!isoDateString) return "";
 
-    console.log("Original Date String:", isoDateString);
+    // console.log("Original Date String:", isoDateString);
 
     const date = new Date(isoDateString);
 
@@ -22,7 +22,7 @@ export default function DonationReceipt({ receiptData, encryptedUserData }) {
 
     const formattedDate = `${day}-${month}-${year}`;
 
-    console.log("Formatted Date:", formattedDate);
+    // console.log("Formatted Date:", formattedDate);
 
     return formattedDate;
   };
@@ -47,7 +47,7 @@ export default function DonationReceipt({ receiptData, encryptedUserData }) {
                   `PAN No. ${parsedData.NGO_PAN}`,
                   `12A - ${parsedData.NGO_12A_NUMBER}`,
                   `80G - ${parsedData.NGO_80G_NUMBER}`,
-                  `REG No. - ${parsedData.NGO_REG_NUMBER}`                 
+                  `REG No. - ${parsedData.NGO_REG_NUMBER}`,
                 ].map((text, index) => (
                   <div key={index} className="flex items-center space-x-2">
                     <svg
@@ -160,8 +160,8 @@ export default function DonationReceipt({ receiptData, encryptedUserData }) {
                 Address - {parsedData.NGO_ADDRESS}
               </p>
               <p className="text-gray-700 font-medium">
-                Contact No. - {parsedData.CONTACT_NUMBER} &nbsp;
-                Email ID - {parsedData.EMAIL || "Not Available"}
+                Contact No. - {parsedData.CONTACT_NUMBER} &nbsp; Email ID -{" "}
+                {parsedData.EMAIL || "Not Available"}
               </p>
             </div>
           </div>

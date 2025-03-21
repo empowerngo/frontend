@@ -54,14 +54,14 @@ const RegisterNGO = () => {
       value: String(plan.planID),
       displayValue: plan.planName,
     }));
-    console.log(parsedData);
+    // console.log(parsedData);
     setSubscriptionData(parsedData);
   }, []);
 
   // Update States when country changes
   useEffect(() => {
     if (selectedCountry) {
-      console.log(selectedCountry);
+      // console.log(selectedCountry);
       const states = State.getStatesOfCountry(selectedCountry).map((state) => ({
         value: state.isoCode,
         displayValue: state.name,
@@ -83,7 +83,7 @@ const RegisterNGO = () => {
           displayValue: city.name,
         })
       );
-      console.log(cities);
+      // console.log(cities);
       setCityData(cities);
       setValue("ngoCity", ""); // Reset city selection
     } else {
@@ -101,7 +101,7 @@ const RegisterNGO = () => {
         setValue,
         setUploading
       );
-      console.log(uploadedUrl);
+      // console.log(uploadedUrl);
       return uploadedUrl;
     }
     return null;

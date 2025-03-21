@@ -1,7 +1,7 @@
 import { FaDollarSign } from "react-icons/fa";
 
 const DonationsSummaryCard = ({ dailySummary }) => {
-  console.log("dailySummary:", dailySummary); // Debugging
+  // console.log("dailySummary:", dailySummary); // Debugging
 
   // Ensure dailySummary exists and is an array
   const summaryData = Array.isArray(dailySummary) ? dailySummary[0] : {};

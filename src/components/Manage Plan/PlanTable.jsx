@@ -25,7 +25,7 @@ const PlanTable = () => {
   const fetchPlans = async () => {
     try {
       const response = await getSubsPlans();
-      console.log(response);
+      // console.log(response);
       localStorage.setItem("plans", JSON.stringify(response.payload));
 
       setPlanList(response?.payload || []);

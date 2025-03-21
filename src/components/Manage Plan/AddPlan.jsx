@@ -47,7 +47,7 @@ const AddPlan = ({ onAddOrUpdatePlan, editPlan, setEditPlan }) => {
     const fetchPlanList = async () => {
       try {
         const plans = await getSubsPlans(); // Correct format
-        console.log("Plan List API Response:", plans); // Debugging
+        // console.log("Plan List API Response:", plans); // Debugging
         setPlanList(Array.isArray(plans.payload) ? plans.payload : []); // Use ngos.payload
       } catch (error) {
         console.error("Error fetching Plan list:", error);

@@ -6,7 +6,7 @@ import CryptoJS from "crypto-js";
 const SECRET_KEY = import.meta.env?.VITE_DataEncrptionKey;
 
 if (!SECRET_KEY) {
-  console.log(SECRET_KEY);
+  // console.log(SECRET_KEY);
   throw new Error("Missing encryption key in .env file");
 }
 
@@ -25,6 +25,7 @@ const decryptData = (cipherText) => {
 
 const initialState = {
   userData: null,
+  projects: [],
 };
 
 const dataSlice = createSlice({
@@ -36,10 +37,14 @@ const dataSlice = createSlice({
       localStorage.setItem("encryptedData", encrypted);
       state.userData = encrypted;
     },
+    setProjects: (state, action) => {
+      state.projects = action.payload;
+    },
     clearUserData: (state) => {
       localStorage.removeItem("encryptedData");
       localStorage.removeItem("authToken");
       state.userData = null;
+      state.projects = [];
     },
   },
 });
@@ -53,7 +58,7 @@ const persistConfig = {
 
 const persistedReducer = persistReducer(persistConfig, dataSlice.reducer);
 
-export const { setUserData, clearUserData } = dataSlice.actions;
+export const { setUserData, clearUserData, setProjects } = dataSlice.actions;
 
 export const store = configureStore({
   reducer: persistedReducer,

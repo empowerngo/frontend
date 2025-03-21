@@ -57,7 +57,7 @@ const DonorTable = () => {
     let ngoID = parsedData.NGO_ID;
     try {
       const response = await getDonorData({ ngoID }, "list");
-      console.log("Donor List - ", response);
+      // console.log("Donor List - ", response);
       if (response && Array.isArray(response.payload)) {
         setDonorList(response.payload);
       }
@@ -141,8 +141,8 @@ const DonorTable = () => {
 
     delete updatedDonor.ngoName;
 
-    console.log("updatedDonor ---", updatedDonor);
-    console.log("selectedDonor ---", selectedDonor);
+    // console.log("updatedDonor ---", updatedDonor);
+    // console.log("selectedDonor ---", selectedDonor);
     try {
       setModalLoading(true);
       const response = await handleDonorRequest(updatedDonor, "u");
@@ -162,7 +162,7 @@ const DonorTable = () => {
       const response = await getDonorData({ donorID }, "info");
       if (response && response.payload) {
         setSelectedDonor(response.payload);
-        console.log("selectedDonor - ", response.payload);
+        // console.log("selectedDonor - ", response.payload);
         setViewOpen(true);
       }
     } catch (error) {

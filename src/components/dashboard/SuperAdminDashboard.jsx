@@ -10,7 +10,7 @@ import {
 } from "recharts";
 
 const SuperAdminDashboard = ({ data }) => {
-  console.log("Dashboard Data:", data);
+  // console.log("Dashboard Data:", data);
 
   if (!data) {
     return <p>Loading data...</p>;

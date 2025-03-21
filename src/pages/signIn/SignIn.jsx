@@ -16,7 +16,7 @@ function SignIn({ setIsAuthenticated }) {
   const dispatch = useDispatch();
 
   const handleForgotPasswordSuccess = (email) => {
-    console.log(`Forgot password email sent to: ${email}`);
+    // console.log(`Forgot password email sent to: ${email}`);
     setShowForgotPassword(false);
   };
 

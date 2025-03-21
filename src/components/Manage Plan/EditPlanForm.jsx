@@ -60,7 +60,7 @@ const EditPlanForm = ({ open, onClose, planID, user }) => {
   };
 
   const handleSave = async () => {
-    console.log("planDetails before appending:", planDetails);
+    // console.log("planDetails before appending:", planDetails);
 
     if (planDetails.PLAN_NAME.trim() === "") {
       alert("Error: Plan Name is required.");
@@ -74,11 +74,11 @@ const EditPlanForm = ({ open, onClose, planID, user }) => {
           formData.append(key, planDetails[key]);
         }
       });
-      console.log(formData);
+      // console.log(formData);
       formData.append("reqType", "u");
 
       // const response = await registerPlan(formData);
-      // console.log("response -- ", response);
+      // // console.log("response -- ", response);
       // if (response?.status === "FAILURE") {
       //   alert(`Error: ${response.message}`);
       // } else {

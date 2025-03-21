@@ -7,10 +7,10 @@ import {
   FaEnvelope,
   FaLock,
   FaBuilding,
-  FaMapMarkerAlt
+  FaMapMarkerAlt,
 } from "react-icons/fa";
 import LeftSide from "../../components/LeftSide";
-import bgRight from "../../assets/bgRight.svg"
+import bgRight from "../../assets/bgRight.svg";
 import { toast } from "react-toastify";
 import { registerNgo } from "../../api/masterApi";
 
@@ -40,7 +40,7 @@ function SignUp() {
     password: "",
     confirmPassword: "",
     documents: [],
-    acceptTerms: false
+    acceptTerms: false,
   });
 
   const totalSteps = 3;
@@ -60,36 +60,35 @@ function SignUp() {
     }
   };
 
+  const handleSubmit = async () => {
+    try {
+      const formDataToSend = new FormData();
+      Object.keys(formData).forEach((key) => {
+        if (key === "documents") {
+          formData[key].forEach((file) =>
+            formDataToSend.append("documents", file)
+          );
+        } else {
+          formDataToSend.append(key, formData[key]);
+        }
+      });
 
-const handleSubmit = async () => {
-  try {
-    const formDataToSend = new FormData();
-    Object.keys(formData).forEach((key) => {
-      if (key === "documents") {
-        formData[key].forEach((file) => formDataToSend.append("documents", file));
-      } else {
-        formDataToSend.append(key, formData[key]);
-      }
-    });
+      const response = await registerNgo(formDataToSend);
+      toast.success("NGO registered successfully!");
+      // console.log("Registration success:", response);
+    } catch (error) {
+      toast.error(error.message || "Registration failed");
+      console.error("Registration error:", error);
+    }
+  };
 
-    const response = await registerNgo(formDataToSend);
-    toast.success("NGO registered successfully!");
-    console.log("Registration success:", response);
-  } catch (error) {
-    toast.error(error.message || "Registration failed");
-    console.error("Registration error:", error);
-  }
-};
-
-
- 
   return (
     <div className="min-h-screen bg-gray-50 flex">
       <LeftSide />
       <div
         className="w-full md:w-[70%] p-4 md:p-12 flex flex-col justify-center"
         style={{
-          backgroundImage:`url(${bgRight})` ,
+          backgroundImage: `url(${bgRight})`,
           backgroundSize: "cover",
         }}
       >
@@ -348,7 +347,7 @@ const handleSubmit = async () => {
                       const file = e.target.files[0];
                       setFormData({
                         ...formData,
-                        documents: [...formData.documents, file]
+                        documents: [...formData.documents, file],
                       });
                     }}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-lg rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-12 p-3"
@@ -372,7 +371,7 @@ const handleSubmit = async () => {
                       const file = e.target.files[0];
                       setFormData({
                         ...formData,
-                        documents: [...formData.documents, file]
+                        documents: [...formData.documents, file],
                       });
                     }}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-lg rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-12 p-3"
@@ -396,7 +395,7 @@ const handleSubmit = async () => {
                       const file = e.target.files[0];
                       setFormData({
                         ...formData,
-                        documents: [...formData.documents, file]
+                        documents: [...formData.documents, file],
                       });
                     }}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-lg rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-12 p-3"
@@ -442,7 +441,7 @@ const handleSubmit = async () => {
                       onChange={(e) =>
                         setFormData({
                           ...formData,
-                          confirmPassword: e.target.value
+                          confirmPassword: e.target.value,
                         })
                       }
                       placeholder="Confirm Password"

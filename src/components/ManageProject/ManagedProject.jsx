@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import ProjectForm from "./AddProject";
 import ProjectsTable from "./ProjectsTable";
 import { getProjects, getPurposes } from "../../api/masterApi";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Decrypt from "../../Decrypt";
+import { setProjects } from "../../store";
 
 const ManageProjects = () => {
   const encryptedUserData = useSelector((state) => state.userData);
@@ -15,6 +16,7 @@ const ManageProjects = () => {
   const [editPurpose, setEditPurpose] = useState(null);
   const [showPurposeForm, setShowPurposeForm] = useState(false);
   const [ngoID, setNgoID] = useState(null);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const userData = JSON.parse(Decrypt(encryptedUserData));
@@ -33,6 +35,8 @@ const ManageProjects = () => {
     if (!ngoID) return;
     try {
       const fetchedProjects = await getProjects(ngoID);
+      dispatch(setProjects(fetchedProjects));
+      console.log(fetchedProjects);
       setProjectList(Array.isArray(fetchedProjects) ? fetchedProjects : []);
     } catch (error) {
       console.error("Error fetching projects:", error);

@@ -63,7 +63,7 @@ const DonationTable = forwardRef((props, ref) => {
     const statement = await retrieveDonations(Decrypt(encryptedUserData));
     setDonors(statement.payload);
     setFilteredDonors(statement.payload);
-    console.log(statement, "statement");
+    // console.log(statement, "statement");
     return statement;
   };
 
@@ -493,26 +493,30 @@ const DonationTable = forwardRef((props, ref) => {
         <Table>
           <TableHead>
             <TableRow className="bg-gray-100">
-              <TableCell align="center" className="font-semibold text-gray-700"><b>SI</b></TableCell>
-              <TableCell  align="center" className="font-semibold text-gray-700">
-              <b>Receipt No.</b>
+              <TableCell align="center" className="font-semibold text-gray-700">
+                <b>SI</b>
+              </TableCell>
+              <TableCell align="center" className="font-semibold text-gray-700">
+                <b>Receipt No.</b>
               </TableCell>
               <TableCell align="center" className="font-semibold text-gray-700">
                 <b>Date</b>
               </TableCell>
 
               <TableCell align="center" className="font-semibold text-gray-700">
-              <b>Name</b>
+                <b>Name</b>
               </TableCell>
               <TableCell align="center" className="font-semibold text-gray-700">
-              <b>Mobile</b>
-              </TableCell>
-              <TableCell align="center" className="font-semibold text-gray-700"><b>PAN</b></TableCell>
-              <TableCell align="center" className="font-semibold text-gray-700">
-              <b>Amount</b>
+                <b>Mobile</b>
               </TableCell>
               <TableCell align="center" className="font-semibold text-gray-700">
-              <b>Receipt</b>
+                <b>PAN</b>
+              </TableCell>
+              <TableCell align="center" className="font-semibold text-gray-700">
+                <b>Amount</b>
+              </TableCell>
+              <TableCell align="center" className="font-semibold text-gray-700">
+                <b>Receipt</b>
               </TableCell>
               {/* {parsedData.ROLE_CODE === 4 || 3 ? (
                 ""
@@ -527,8 +531,11 @@ const DonationTable = forwardRef((props, ref) => {
                 ""
               ) : (
                 <>
-                  <TableCell align="center" className="font-semibold text-gray-700">
-                  <b>Action</b>
+                  <TableCell
+                    align="center"
+                    className="font-semibold text-gray-700"
+                  >
+                    <b>Action</b>
                   </TableCell>
                 </>
               )}

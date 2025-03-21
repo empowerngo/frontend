@@ -163,26 +163,26 @@ const ProjectsTable = () => {
       /> */}
 
       <div className="w-full">
-          <div className="flex gap-2">
-            <TextField
-              label="Search Project..."
-              variant="outlined"
-              size="small"
-              fullWidth
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="mb-4"
-            />
-             <Button
-                variant="contained"
-                color="secondary"
-                onClick={() => setSearchTerm("")}
-                disabled={!searchTerm}
-              >
-                Clear
-              </Button>
-            </div>
+        <div className="flex gap-2">
+          <TextField
+            label="Search Project..."
+            variant="outlined"
+            size="small"
+            fullWidth
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="mb-4"
+          />
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => setSearchTerm("")}
+            disabled={!searchTerm}
+          >
+            Clear
+          </Button>
         </div>
+      </div>
 
       {loading ? (
         <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
@@ -193,9 +193,15 @@ const ProjectsTable = () => {
           <Table>
             <TableHead>
               <TableRow className="bg-gray-100">
-                <TableCell align="center"><b>Project Name</b></TableCell>
-                <TableCell align="center"><b>Purpose Name</b></TableCell>
-                <TableCell align="center"><b>Action</b></TableCell>
+                <TableCell align="center">
+                  <b>Project Name</b>
+                </TableCell>
+                <TableCell align="center">
+                  <b>Purpose Name</b>
+                </TableCell>
+                <TableCell align="center">
+                  <b>Action</b>
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>

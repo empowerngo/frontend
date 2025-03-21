@@ -1,12 +1,16 @@
 import api from "./api";
-import { setUserData } from "../store";
+import { setProjects, setUserData } from "../store";
 import Decrypt from "../Decrypt";
 
 export const loginUser = async (credentials, dispatch) => {
   try {
     const response = await api.post("/userSignIn", credentials);
     const { token, user } = response.data.payload;
-    console.log(response.data.payload);
+    if (response.data.payload.PROJECTS) {
+      dispatch(setProjects(JSON.stringify(response.data.payload.PROJECTS)));
+    }
+
+    console.log(response.data.payload, "Signin");
     localStorage.setItem("authToken", token);
     // localStorage.setItem("user", JSON.stringify(user));
     dispatch(setUserData(JSON.stringify(user)));
@@ -18,9 +22,9 @@ export const loginUser = async (credentials, dispatch) => {
 
 export const registerNgo = async (formData) => {
   try {
-    console.log("formData - ", formData);
+    // console.log("formData - ", formData);
     const response = await api.post("/manageNGO", formData);
-    console.log("response - ", response.data);
+    // console.log("response - ", response.data);
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
@@ -43,8 +47,8 @@ export const retrieveNGOList = async (reqType, ngoId = null) => {
     if (ngoId) {
       requestData.ngoID = ngoId;
     }
-    console.log("Sending Request Data:", requestData);
-    console.log("Token Sent:", token);
+    // console.log("Sending Request Data:", requestData);
+    // console.log("Token Sent:", token);
     const response = await api.post("/retrieveNGOInfo", requestData, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -61,10 +65,10 @@ export const retrieveNGOList = async (reqType, ngoId = null) => {
 export const manageProject = async (formData, reqType) => {
   try {
     formData.append("reqType", reqType);
-    console.log("manageProject API - Request:", formData);
+    // console.log("manageProject API - Request:", formData);
 
     const response = await api.post("/manageProject", formData);
-    console.log("manageProject API - Response:", response.data);
+    // console.log("manageProject API - Response:", response.data);
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
@@ -74,10 +78,10 @@ export const manageProject = async (formData, reqType) => {
 export const managePurpose = async (formData, reqType) => {
   try {
     formData.append("reqType", reqType);
-    console.log("managePurpose API - Request:", formData);
+    // console.log("managePurpose API - Request:", formData);
 
     const response = await api.post("/managePurpose", formData);
-    console.log("managePurpose API - Response:", response.data);
+    // console.log("managePurpose API - Response:", response.data);
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
@@ -107,9 +111,9 @@ export const getPurposes = async (ngoID) => {
 
 export const registerUser = async (formData) => {
   try {
-    console.log("formData - ", formData);
+    // console.log("formData - ", formData);
     const response = await api.post("/manageUserRegistration", formData, {});
-    console.log("response - ", response.data);
+    // console.log("response - ", response.data);
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
@@ -252,9 +256,9 @@ export const getSubsPlans = async () => {
 
 export const registerPlan = async (formData) => {
   try {
-    console.log("formData - ", formData);
+    // console.log("formData - ", formData);
     const response = await api.post("/manageSubsPackage", formData, {});
-    console.log("response - ", response.data);
+    // console.log("response - ", response.data);
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
@@ -271,7 +275,7 @@ export const importFile = async (csvData, ngoId, donationType) => {
       csvData,
     });
 
-    console.log("Upload successful:", response.data);
+    // console.log("Upload successful:", response.data);
     alert("Upload successful!");
   } catch (error) {
     console.error("Upload failed:", error);
@@ -307,7 +311,7 @@ export const retrieveDonations = async (encryptedUserData) => {
 
 export const handleDonationRequest = async (formData, reqType) => {
   try {
-    console.log(formData, reqType);
+    // console.log(formData, reqType);
     if (!["s", "u"].includes(reqType)) {
       throw new Error(
         "Invalid reqType. Must be 's' for save or 'u' for update."
@@ -336,7 +340,7 @@ export const sendEmail = async (donorDetails, receiptAttachment) => {
 
     const response = await api.post("/sendEmail", requestData);
 
-    console.log(requestData);
+    // console.log(requestData);
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
@@ -345,7 +349,7 @@ export const sendEmail = async (donorDetails, receiptAttachment) => {
 
 export const handleNGORequest = async (formData, reqType) => {
   try {
-    console.log("Inside handleNGORequest ");
+    // console.log("Inside handleNGORequest ");
     if (!["s", "u"].includes(reqType)) {
       throw new Error(
         "Invalid reqType. Must be 's' for save or 'u' for update."
@@ -358,7 +362,7 @@ export const handleNGORequest = async (formData, reqType) => {
     }
     const payload = { ...formData, reqType };
     const response = await api.post("/manageNGO", payload);
-    console.log("response.data -  ", response.data);
+    // console.log("response.data -  ", response.data);
     return response.data;
   } catch (error) {
     console.error("Error handling NGO request:", error);
@@ -368,7 +372,7 @@ export const handleNGORequest = async (formData, reqType) => {
 export const handleForm10BERequest = async (formData) => {
   try {
     const response = await api.post("/retrieveForm10BDData", formData);
-    console.log("response.data -  ", response.data.payload);
+    // console.log("response.data -  ", response.data.payload);
     return response.data.payload;
   } catch (error) {
     console.error("Error handling NGO request:", error);
@@ -391,7 +395,7 @@ export const retrieveDashboard = async (encryptedUserData) => {
     }
 
     const response = await api.post("/retrieveDashBoardData", requestData);
-    console.log(response.data.payload);
+    // console.log(response.data.payload);
     return response.data.payload;
   } catch (error) {
     throw error.response?.data || error.message;

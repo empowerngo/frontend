@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const API_BASE_URL = "https://kayrseuphg.execute-api.ap-south-1.amazonaws.com/Stage";
+const API_BASE_URL =
+  "https://kayrseuphg.execute-api.ap-south-1.amazonaws.com/Stage";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -11,11 +12,11 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("authToken");
-    
+
     if (!token) {
       console.warn("No auth token found in localStorage");
     } else {
-      console.log("Attaching Token:", token);
+      // console.log("Attaching Token:", token);
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
