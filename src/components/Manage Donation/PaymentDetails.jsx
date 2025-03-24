@@ -7,6 +7,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import Decrypt from "../../Decrypt";
 import { setProjects } from "../../store";
+import { hasAccess, validateAccess } from "../../utils/ValidateAccess";
 
 const PaymentDetails = ({
   selectedTransaction,
@@ -31,6 +32,9 @@ const PaymentDetails = ({
   const encryptedprojects = useSelector((state) => state.projects);
   const [SelectedDonarID, setSelectedDonarID] = useState("");
   const dispatch = useDispatch();
+
+  const usageDetails = useSelector((state) => state.usageDetails);
+  const canSubmit = hasAccess(usageDetails, "NUMBER_OF_DONATIONS");
 
   const userData = Decrypt(encryptedUserData);
 
@@ -132,9 +136,13 @@ const PaymentDetails = ({
         const searchTermLower = searchTerm.toLowerCase();
         const donorFNameLower = donor.donorFName.toLowerCase();
         const donorLNameLower = donor.donorLName.toLowerCase();
-        const donorPANLower = donor.donorPAN ? donor.donorPAN.toLowerCase() : ""; // Handle null/undefined
-        const donorMobileLower = donor.donorMobile ? donor.donorMobile.toLowerCase() : ""; // Handle null/undefined
-      
+        const donorPANLower = donor.donorPAN
+          ? donor.donorPAN.toLowerCase()
+          : ""; // Handle null/undefined
+        const donorMobileLower = donor.donorMobile
+          ? donor.donorMobile.toLowerCase()
+          : ""; // Handle null/undefined
+
         return (
           donorFNameLower.includes(searchTermLower) ||
           donorLNameLower.includes(searchTermLower) ||
@@ -659,15 +667,17 @@ const PaymentDetails = ({
               >
                 Cancel
               </button>
-              <button
-                type="submit"
-                className="px-4 py-2 bg-blue-500 text-white rounded"
-                onClick={() => {
-                  handleSubmit();
-                }}
-              >
-                Submit
-              </button>
+              {canSubmit ? (
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-500 text-white rounded"
+                  onClick={() => {
+                    handleSubmit();
+                  }}
+                >
+                  Submit
+                </button>
+              ) : null}
             </div>
           </form>
         </div>

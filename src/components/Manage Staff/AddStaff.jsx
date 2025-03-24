@@ -9,6 +9,7 @@ import Swal from "sweetalert2";
 import { FaUser, FaEnvelope, FaPhone, FaEye, FaEyeSlash } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import Decrypt from "../../Decrypt";
+import { hasAccess } from "../../utils/ValidateAccess";
 
 const AddStaff = ({ onAddOrUpdateStaff, editStaff, setEditStaff }) => {
   const {
@@ -26,6 +27,9 @@ const AddStaff = ({ onAddOrUpdateStaff, editStaff, setEditStaff }) => {
   const [ngoList, setNgoList] = useState([]);
   const [selectedNgo, setSelectedNgo] = useState("");
   const encryptedUserData = useSelector((state) => state.userData);
+
+  const usageDetails = useSelector((state) => state.usageDetails);
+  const canSubmit = hasAccess(usageDetails, "CA_ACCESS");
 
   const roleMapping = { "NGO ADMIN": 2, "NGO STAFF": 3, "NGO CA": 4 };
 
@@ -160,13 +164,17 @@ const AddStaff = ({ onAddOrUpdateStaff, editStaff, setEditStaff }) => {
               {userRole === 2 && (
                 <>
                   <option value={roleMapping["NGO STAFF"]}>NGO Staff</option>
-                  <option value={roleMapping["NGO CA"]}>NGO CA</option>
+                  {canSubmit && (
+                    <option value={roleMapping["NGO CA"]}>NGO CA</option>
+                  )}
                 </>
               )}
               {userRole > 2 && (
                 <>
                   <option value={roleMapping["NGO STAFF"]}>NGO Staff</option>
-                  <option value={roleMapping["NGO CA"]}>NGO CA</option>
+                  {canSubmit && (
+                    <option value={roleMapping["NGO CA"]}>NGO CA</option>
+                  )}
                   <option value={roleMapping["NGO ADMIN"]}>NGO Admin</option>
                 </>
               )}

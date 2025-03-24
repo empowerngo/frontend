@@ -26,6 +26,7 @@ const decryptData = (cipherText) => {
 const initialState = {
   userData: null,
   projects: [],
+  usageDetails: {},
 };
 
 const dataSlice = createSlice({
@@ -39,6 +40,9 @@ const dataSlice = createSlice({
     },
     setProjects: (state, action) => {
       state.projects = action.payload;
+    },
+    setUsage: (state, action) => {
+      state.usageDetails = action.payload;
     },
     clearUserData: (state) => {
       localStorage.removeItem("encryptedData");
@@ -58,7 +62,8 @@ const persistConfig = {
 
 const persistedReducer = persistReducer(persistConfig, dataSlice.reducer);
 
-export const { setUserData, clearUserData, setProjects } = dataSlice.actions;
+export const { setUserData, clearUserData, setProjects, setUsage } =
+  dataSlice.actions;
 
 export const store = configureStore({
   reducer: persistedReducer,

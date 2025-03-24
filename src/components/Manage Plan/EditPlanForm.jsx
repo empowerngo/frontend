@@ -106,8 +106,8 @@ const EditPlanForm = ({ open, onClose, planID, user }) => {
               { label: "No. Of Users", name: "NUMBER_OF_USERS" },
               { label: "No. Of Donations", name: "NUMBER_OF_DONATIONS" },
               { label: "Plan Validity", name: "planValidity" },
-              { label: "Form 10 BE?", name: "FORM_10BE_REPORT" },
-              { label: "Form 10 BE Mail?", name: "form10BEMail" },
+              { label: "Form 10 BD/BE?", name: "FORM_10BE_REPORT" },
+              { label: "Form 10 BD/BE Mail?", name: "form10BEMail" },
               { label: "Form 10 Bd?", name: "form10BdData" },
               { label: "CA Access?", name: "caAccess" },
             ].map(({ label, name }) => (

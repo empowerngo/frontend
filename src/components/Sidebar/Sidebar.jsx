@@ -21,6 +21,7 @@ import Loading from "../LoadingSpinner";
 import "./style.css";
 import { useSelector } from "react-redux";
 import Decrypt from "../../Decrypt";
+import { hasAccess } from "../../utils/ValidateAccess";
 
 const iconComponents = {
   HomeIcon,
@@ -36,6 +37,9 @@ const Sidebar = ({ setIsAuthenticated }) => {
   const [isOpen, setIsOpen] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
+  const usageDetails = useSelector((state) => state.usageDetails);
+  const canSubmit = hasAccess(usageDetails, "FORM_10BD_DATA");
+  console.log(!canSubmit);
 
   const user = useMemo(() => {
     const storedUser = JSON.parse(Decrypt(encryptedUserData)) || {
@@ -108,18 +112,34 @@ const Sidebar = ({ setIsAuthenticated }) => {
             const IconComponent = iconComponents[item.icon];
             const isActive = location.pathname === item.route;
 
-            return (
+            return !canSubmit && item.title === "Form 10 BD/BE" ? (
+              ""
+            ) : (
               <button
                 key={index}
+                disabled={!canSubmit && item.title === "Form 10 BD/BE"}
                 onClick={() => handleNavigation(item.route)}
                 className={`w-full flex items-center p-3 rounded-lg text-lg transition-all ${
-                  isActive ? "bg-blue-700 text-white" : "hover:bg-blue-800"
+                  isActive
+                    ? "bg-blue-700 text-white"
+                    : "hover:bg-blue-800 text-black-200"
+                } ${
+                  !canSubmit && item.title === "Form 10 BD/BE"
+                    ? "bg-grey-300 text-grey-500 cursor-not-allowed hover:bg-transparent"
+                    : ""
                 }`}
               >
                 <div className="flex items-center space-x-3">
                   {IconComponent && (
-                    <IconComponent className="w-6 h-6 text-blue-400" />
+                    <IconComponent
+                      className={`w-6 h-6 ${
+                        !canSubmit && item.title === "Form 10 BD/BE"
+                          ? "text-gray-500"
+                          : "text-blue-400"
+                      }`}
+                    />
                   )}
+
                   <span>{item.title}</span>
                 </div>
               </button>

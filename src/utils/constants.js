@@ -74,7 +74,7 @@ export const menuItems = [
     roles: [1],
   },
   {
-    title: "Form 10 BE",
+    title: "Form 10 BD/BE",
     icon: "NewspaperIcon",
     route: "/From10BE",
     roles: [2],

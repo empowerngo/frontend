@@ -21,16 +21,29 @@ import ManageDonation from "./components/Manage Donation/ManageDonation";
 import ManagePlan from "./components/Manage Plan/ManagePlan";
 import Form10BE from "./components/form10be/Form10BE";
 import { useDispatch, useSelector } from "react-redux";
-import { clearUserData } from "./store";
+import { clearUserData, setUsage } from "./store";
 import Decrypt from "./Decrypt";
+import { retrieveUsageNPlanInfo } from "./api/masterApi";
+import { validateAccess } from "./utils/ValidateAccess";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true);
   const encryptedUserData = useSelector((state) => state.userData);
-
+  const usageDetails = useSelector((state) => state.usageDetails);
+  const parseduser = Decrypt(encryptedUserData);
   const dispatch = useDispatch();
+
+  const fetchNgoUsage = async () => {
+    try {
+      const response = await retrieveUsageNPlanInfo(parseduser);
+      dispatch(setUsage(response));
+      console.log(response);
+    } catch (err) {
+      console.log("Error fetching ngo usage", err);
+    }
+  };
 
   useEffect(() => {
     const handleStorageChange = (event) => {
@@ -61,6 +74,10 @@ function App() {
 
     setLoading(false);
   }, [encryptedUserData]);
+
+  useEffect(() => {
+    fetchNgoUsage();
+  }, []);
 
   if (loading) return <Loading />;
 

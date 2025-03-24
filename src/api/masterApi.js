@@ -401,3 +401,17 @@ export const retrieveDashboard = async (encryptedUserData) => {
     throw error.response?.data || error.message;
   }
 };
+
+export const retrieveUsageNPlanInfo = async (encryptedUserData) => {
+  try {
+    const parsedData = JSON.parse(encryptedUserData);
+
+    const requestData = { ngoID: parsedData.NGO_ID.toString() };
+    const response = await api.post("/retrieveUsageNPlanInfo", requestData);
+    console.log(response.data.payload);
+
+    return response.data.payload;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
