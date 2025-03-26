@@ -21,18 +21,32 @@ export const validateField = (name) => {
       minLength: { value: 6, message: "Pin Code must be 6 digits" },
       maxLength: { value: 6, message: "Pin Code must be 6 digits" },
     },
+    donorMobile: {
+      required: "Mobile number is required",
+      pattern: {
+        value: "^[0-9]{10}$",
+        message: "Invalid mobile number (10 digits required)",
+      },
+    },
     donorEmail: {
       required: "Email is required",
       pattern: {
-        value: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$",
+        value: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
         message: "Invalid email address",
+      },
+    },
+    donorAdhar: {
+      required: "Aadhaar number is required",
+      pattern: {
+        value: "^[0-9]{12}$",
+        message: "Aadhaar number must be exactly 12 digits",
       },
     },
     ngoCountry: { required: "Country is required" },
     ngoState: { required: "State is required" },
     ngoCity: { required: "City is required" },
     donorPAN: {
-      // required: "PAN number is required",
+      required: "PAN number is required",
       pattern: {
         value: "^[A-Z]{5}[0-9]{4}[A-Z]{1}$",
         message: "Invalid PAN number",

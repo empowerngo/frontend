@@ -22,7 +22,7 @@ import Loading from "../LoadingSpinner";
 import { useSelector } from "react-redux";
 import Decrypt from "../../Decrypt";
 
-const DonorForm = () => {
+const DonorForm = ({setReload}) => {
   const {
     register,
     handleSubmit,
@@ -31,7 +31,8 @@ const DonorForm = () => {
     watch,
     setValue,
   } = useForm({
-    mode: "onBlur", // Trigger validation on blur
+    mode: "onBlur",
+    defaultValues: { donorCountry: "IN" },
   });
   const [loading, setLoading] = useState(false);
   const [stateData, setStateData] = useState([]);
@@ -47,6 +48,7 @@ const DonorForm = () => {
 
   // Update States when country changes
   useEffect(() => {
+    setValue("donorCountry", "IN"); // ✅ Ensure "IN" (India) is set as default
     if (selectedCountry) {
       console.log(selectedCountry);
       const states = State.getStatesOfCountry(selectedCountry).map((state) => ({
@@ -101,6 +103,7 @@ const DonorForm = () => {
         confirmButtonText: "OK",
       });
       reset();
+      setReload((prev) => !prev);
     } catch (error) {
       console.error("Error submitting donor data:", error);
       toast.error(
@@ -179,8 +182,7 @@ const DonorForm = () => {
             "select", // ✅ Changed from "text" to "select"
             "Select Country",
             FaGlobe,
-            { options: countryData }, // ✅ Pass the fetched country list as dropdown options
-            { defaultValue: "India" }
+            { options: countryData }
           )}
           {renderInputField(
             register,

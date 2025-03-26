@@ -8,6 +8,7 @@ const ManageDonor = () => {
   const [editDonor, setEditDonor] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [reload, setReload] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -55,6 +56,7 @@ const ManageDonor = () => {
           onAddOrUpdateDonor={handleAddOrUpdateDonor}
           editDonor={editDonor}
           setEditDonor={setEditDonor}
+          setReload={setReload}
         />
       )}
 
@@ -63,7 +65,7 @@ const ManageDonor = () => {
           <Loading />
         </div>
       ) : (
-        <DonorTable donorList={donorList} setEditDonor={setEditDonor} />
+        <DonorTable donorList={donorList} setEditDonor={setEditDonor} reload={reload} />
       )}
     </div>
   );

@@ -7,8 +7,10 @@ import { handleDonationRequest } from "../../api/masterApi";
 import { useSelector } from "react-redux";
 import Decrypt from "../../Decrypt";
 import { hasAccess } from "../../utils/ValidateAccess";
+import Loading from "../LoadingSpinner";
 
 const ManageDonation = () => {
+  const [loading, setLoading] = useState(true);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const [selectedDonationTable, setSelectedDonationTable] = useState(null);
   const [isSearchDisable, setisSearchDisable] = useState(false);
@@ -33,6 +35,13 @@ const ManageDonation = () => {
 
   const donationTableRef = useRef(null);
   const uploadBankRef = useRef(null);
+
+  useEffect(() => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+  }, []);
 
   const handleOnSubmit = () => {
     if (donationTableRef.current) {

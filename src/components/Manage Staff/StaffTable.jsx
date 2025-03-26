@@ -12,59 +12,45 @@ import {
   Button,
   CircularProgress,
   IconButton,
+  TableSortLabel,
 } from "@mui/material";
 import EditUserForm from "./EditUserForm";
-import { retrieveUserList } from "../../api/masterApi";
-import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
 
-const StaffTable = () => {
-  const [userList, setUserList] = useState([]);
+const StaffTable = ({ users, loading }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [editOpen, setEditOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-  const fetchUserList = async () => {
-    setLoading(true);
-    try {
-      const response = await retrieveUserList("list");
-      setUserList(response?.payload || []);
-    } catch (err) {
-      console.error("Failed to fetch User data", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-  useEffect(() => {
-    fetchUserList();
-  }, []);
+  const [order, setOrder] = useState("asc");
+  const [orderBy, setOrderBy] = useState("NAME");
 
   const filteredStaff = useMemo(() => {
-    if (!Array.isArray(userList)) {
-      return userList; // Or return [], or handle the error appropriately
-    }
+    if (!Array.isArray(users)) return [];
 
-    if (!searchTerm) {
-      return userList;
-    }
-
-    const lowerSearchTerm = searchTerm.toLowerCase();
-
-    return userList.filter((staff) => {
-      const name = (staff.NAME || "").toLowerCase();
-      const email = (staff.EMAIL || "").toLowerCase();
-      const contact = (staff.CONTACT_NUMBER || "").toLowerCase();
-
-      return (
-        name.includes(lowerSearchTerm) ||
-        email.includes(lowerSearchTerm) ||
-        contact.includes(lowerSearchTerm)
+    let filtered = users;
+    if (searchTerm) {
+      const lowerSearchTerm = searchTerm.toLowerCase();
+      filtered = users.filter((staff) =>
+        [staff.NAME, staff.EMAIL, staff.CONTACT_NUMBER]
+          .map((field) => (field || "").toLowerCase())
+          .some((value) => value.includes(lowerSearchTerm))
       );
+    }
+
+    return filtered.sort((a, b) => {
+      if (a[orderBy] < b[orderBy]) return order === "asc" ? -1 : 1;
+      if (a[orderBy] > b[orderBy]) return order === "asc" ? 1 : -1;
+      return 0;
     });
-  }, [userList, searchTerm]);
+  }, [users, searchTerm, order, orderBy]);
+
+  const handleSort = (property) => {
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
+    setOrderBy(property);
+  };
 
   const handleEdit = (staff) => {
     setSelectedUser(staff);
@@ -73,7 +59,6 @@ const StaffTable = () => {
 
   const handleEditClose = () => {
     setEditOpen(false);
-    fetchUserList();
     setSelectedUser(null);
   };
 
@@ -104,19 +89,27 @@ const StaffTable = () => {
           <TableHead>
             <TableRow className="bg-gray-100">
               {[
-                "Name",
-                "Email",
-                "Phone",
-                "Role",
-                "NGO Name",
-                "Created by",
-                "Status",
-                "Actions",
+                "NAME",
+                "EMAIL",
+                "CONTACT_NUMBER",
+                "ROLE_NAME",
+                "NGO_NAMES",
+                "CREATED_BY_NAME",
+                "USER_STATUS",
               ].map((heading) => (
                 <TableCell key={heading}>
-                  <b>{heading}</b>
+                  <TableSortLabel
+                    active={orderBy === heading}
+                    direction={orderBy === heading ? order : "asc"}
+                    onClick={() => handleSort(heading)}
+                  >
+                    <b>{heading.replace("_", " ")}</b>
+                  </TableSortLabel>
                 </TableCell>
               ))}
+              <TableCell>
+                <b>Actions</b>
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -145,14 +138,6 @@ const StaffTable = () => {
                     <TableCell>{staff.CREATED_BY_NAME}</TableCell>
                     <TableCell>{staff.USER_STATUS}</TableCell>
                     <TableCell>
-                      {/* <Button
-                        variant="contained"
-                        color="primary"
-                        size="small"
-                        onClick={() => handleEdit(staff)}
-                      >
-                        Edit
-                      </Button> */}
                       <IconButton
                         color="secondary"
                         onClick={() => handleEdit(staff)}
@@ -176,7 +161,7 @@ const StaffTable = () => {
           setRowsPerPage(parseInt(e.target.value, 10));
           setPage(0);
         }}
-        rowsPerPageOptions={[5, 10, 25]}
+        rowsPerPageOptions={[10, 20, 50, 100]}
       />
       {editOpen && selectedUser && (
         <EditUserForm

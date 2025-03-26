@@ -1,17 +1,25 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { registerUser, retrieveNGOList } from "../../api/masterApi";
 import renderInputField from "../../components/CustomInputField";
 import Loading from "../../components/LoadingSpinner";
-import Swal from "sweetalert2";
+
 import { FaUser, FaEnvelope, FaPhone, FaEye, FaEyeSlash } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import Decrypt from "../../Decrypt";
 import { hasAccess } from "../../utils/ValidateAccess";
 
-const AddStaff = ({ onAddOrUpdateStaff, editStaff, setEditStaff }) => {
+const AddStaff = ({
+  onAddOrUpdateStaff,
+  editStaff,
+  setEditStaff,
+  onSubmit,
+  loading,
+  isSubmitting,
+  userRole,
+  setUserRole,
+}) => {
   const {
     register,
     handleSubmit,
@@ -21,9 +29,6 @@ const AddStaff = ({ onAddOrUpdateStaff, editStaff, setEditStaff }) => {
   } = useForm();
 
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [userRole, setUserRole] = useState(null);
   const [ngoList, setNgoList] = useState([]);
   const [selectedNgo, setSelectedNgo] = useState("");
   const encryptedUserData = useSelector((state) => state.userData);
@@ -69,48 +74,6 @@ const AddStaff = ({ onAddOrUpdateStaff, editStaff, setEditStaff }) => {
     }
   }, [userRole]);
 
-  const onSubmit = async (data) => {
-    try {
-      setIsSubmitting(true);
-      setLoading(true);
-      if (userRole === 1) {
-        data.roleCode = 2;
-      }
-
-      data.reqType = "s";
-      data.ngoID =
-        userRole === 1
-          ? selectedNgo
-          : JSON.parse(Decrypt(encryptedUserData))?.NGO_ID;
-      data.userID = JSON.parse(Decrypt(encryptedUserData))?.USER_ID;
-
-      await registerUser(data);
-
-      Swal.fire({
-        icon: "success",
-        title: editStaff ? "Staff Updated" : "Staff Added",
-        text: editStaff
-          ? "Staff details updated successfully!"
-          : "Staff has been successfully added!",
-      });
-
-      reset();
-      setEditStaff(null);
-      if (onAddOrUpdateStaff) onAddOrUpdateStaff();
-    } catch (error) {
-      console.error("Error registering User:", error);
-      toast.error("Error registering User!");
-      Swal.fire({
-        icon: "fail",
-        title: editStaff ? "User update failed" : "User addition failed",
-        text: editStaff ? "Failed to update User!" : "Failed to add User",
-      });
-    } finally {
-      setIsSubmitting(false);
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="bg-white p-8 shadow-md rounded-lg">
       <h2 className="text-2xl font-bold mb-4 text-gray-800 text-center">
@@ -120,7 +83,7 @@ const AddStaff = ({ onAddOrUpdateStaff, editStaff, setEditStaff }) => {
       {loading && <Loading />}
 
       <form
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit(onSubmit, reset)}
         className="grid grid-cols-1 md:grid-cols-2 gap-4"
       >
         {renderInputField(
