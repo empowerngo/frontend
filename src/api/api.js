@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API_BASE_URL =
-  "https://nlweepvp9e.execute-api.ap-south-1.amazonaws.com/Prod/prod";
+  "https://c0bkpufe5j.execute-api.ap-south-1.amazonaws.com/Prod/prod";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
